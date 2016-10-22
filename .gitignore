@@ -11,3 +11,6 @@ npm-*
 
 # IDEA
 /.idea
+
+# Build
+/dist
