@@ -13,10 +13,6 @@ const base = {
                 query: {
                     presets: ['es2015']
                 }
-            },
-            {
-                test: /\.json$/,
-                loader: 'json-loader'
             }
         ]
     },
