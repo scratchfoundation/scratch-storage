@@ -7,13 +7,22 @@ class Asset {
      * @param {Buffer} [data] - The in-memory data for this asset; optional.
      */
     constructor (assetType, assetId, dataFormat, data) {
+        /** @type {AssetType} */
         this.assetType = assetType;
+
+        /** @type {string} */
         this.assetId = assetId;
         if (data && !dataFormat) {
             throw new Error('Data provided without specifying its format');
         }
+
+        /** @type {DataFormat} */
         this.dataFormat = dataFormat;
-        this.data = data || new Buffer();
+
+        /** @type {Buffer} */
+        this.data = data;
+
+        /** @type {Asset[]} */
         this.dependencies = [];
     }
 }

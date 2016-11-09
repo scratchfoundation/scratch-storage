@@ -1,5 +1,6 @@
 const Asset = require('./Asset');
 const BuiltinHelper = require('./BuiltinHelper');
+const DependencyParser = require('./DependencyParser');
 const LocalHelper = require('./LocalHelper');
 const WebHelper = require('./WebHelper');
 
@@ -86,6 +87,37 @@ class ScratchStorage {
             tryNextHelper();
         });
     }
+
+    /**
+     * Fetch an asset and all its dependencies recursively.
+     * @param {AssetType} assetType - The type of asset to fetch.
+     * @param {string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
+     * @return {Promise.<Asset>} A promise for the requested Asset.
+     */
+    loadDeep (assetType, assetId) {
+        return new Promise((fulfill, reject) => {
+            this.load(assetType, assetId).then(
+                asset => {
+                    const dependencies = DependencyParser.getDependencies(asset);
+                    // TODO: We really want something like Promise.any, not Promise.all
+                    Promise.all(dependencies.map(dependencyAsset => {
+                        if (dependencyAsset.data) {
+                            return Promise.resolve(dependencyAsset.data);
+                        }
+                        return this.loadDeep(dependencyAsset.assetType, dependencyAsset.assetId);
+                    })).then(loadedDependencies => {
+                        asset.dependencies = loadedDependencies;
+                        fulfill(asset);
+                    });
+                },
+                error => {
+                    reject(error);
+                }
+            );
+        });
+    }
+
+
 }
 
 /**
