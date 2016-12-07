@@ -30,6 +30,7 @@ const base = {
 module.exports = [
     // Web-compatible
     Object.assign({}, base, {
+        target: 'web',
         entry: {
             'scratch-storage': './src/index-web.js',
             'scratch-storage.min': './src/index-web.js'
@@ -40,8 +41,9 @@ module.exports = [
         }
     }),
 
-    // Webpack-compatible
+    // Node-compatible
     Object.assign({}, base, {
+        target: 'node',
         entry: {
             'scratch-storage': './src/index.js'
         },

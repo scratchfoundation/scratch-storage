@@ -31,7 +31,7 @@
     "binary-loader": "0.0.1",
     "debug": "^2.2.0",
     "eslint": "^3.8.1",
-    "eslint-config-scratch": "^2.0.1",
+    "eslint-config-scratch": "^3.1.0",
     "eslint-plugin-react": "^6.4.1",
     "file-loader": "^0.9.0",
     "webpack": "^1.13.2",
