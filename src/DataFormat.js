@@ -3,11 +3,11 @@
  * @type {Object.<string,string>}
  */
 const DataFormat = {
-    JSON: 'JSON',
-    PNG: 'PNG',
-    SB2: 'SB2',
-    SVG: 'SVG',
-    WAV: 'WAV'
+    JSON: 'json',
+    PNG: 'png',
+    SB2: 'sb2',
+    SVG: 'svg',
+    WAV: 'wav'
 };
 
 module.exports = DataFormat;

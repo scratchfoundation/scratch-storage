@@ -1,10 +1,12 @@
+const got = require('got');
+
 const Asset = require('./Asset');
 const Helper = require('./Helper');
-const xhr = require('xhr');
 
 /**
  * @typedef {function} UrlFunction - A function which computes a URL from asset information.
  * @param {Asset} - The asset for which the URL should be computed.
+ * @returns {string} - The URL for the asset.
  */
 
 class WebHelper extends Helper {
@@ -53,8 +55,9 @@ class WebHelper extends Helper {
                 /** @type {UrlFunction} */
                 let urlFunction;
 
-                for (; sourceIndex < sources.length; ++sourceIndex) {
+                while (sourceIndex < sources.length) {
                     const source = sources[sourceIndex];
+                    ++sourceIndex;
                     if (source.types.indexOf(assetType) >= 0) {
                         urlFunction = source.urlFunction;
                         break;
@@ -62,21 +65,28 @@ class WebHelper extends Helper {
                 }
 
                 if (urlFunction) {
+                    const options = {
+                        encoding: null // return body as Buffer
+                    };
                     const url = urlFunction(asset);
-                    xhr({
-                        uri: url
-                    }, (error, response, body) => {
-                        if (error) {
+                    got(url, options).then(
+                        response => {
+                            if (response.status < 200 || response.status >= 300) {
+                                errors.push({url: url, result: response});
+                                tryNextSource();
+                            } else {
+                                /** @type {Buffer} */
+                                const buffer = response.body;
+
+                                // Convert from Buffer to Uint8Array, assuming Node 4.x+ or compatible Webpack
+                                asset.data = new Uint8Array(buffer.buffer);
+                                fulfill(asset);
+                            }
+                        },
+                        error => {
                             errors.push({url: url, result: error});
                             tryNextSource();
-                        } else if (response.status < 200 || response.status >= 300) {
-                            errors.push({url: url, result: response});
-                            tryNextSource();
-                        } else {
-                            asset.data = body;
-                            fulfill(asset);
-                        }
-                    });
+                        });
                 } else if (errors.length > 0) {
                     reject(errors);
                 } else {

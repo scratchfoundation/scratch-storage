@@ -1,4 +1,3 @@
-const Asset = require('./Asset');
 const BuiltinHelper = require('./BuiltinHelper');
 const LocalHelper = require('./LocalHelper');
 const WebHelper = require('./WebHelper');
@@ -17,13 +16,10 @@ class ScratchStorage {
     /**
      * Register a web-based source for assets. Sources will be checked in order of registration.
      * @param {Array.<AssetType>} types - The types of asset provided by this source.
-     * @param {string} urlPattern - The URL pattern to use when loading assets from this source.
-     * The following sub-strings, if found in the URL pattern, will be replaced with properties of the requested asset:
-     * - '{ID}' will be replaced with the ID of the requested asset.
-     * - '{EXT}' will be replaced with the file extension of the requested asset (such as 'svg').
+     * @param {UrlFunction} urlFunction - A function which computes a URL from an Asset.
      */
-    addWebSource (types, urlPattern) {
-        this.webHelper.addSource(types, urlPattern);
+    addWebSource (types, urlFunction) {
+        this.webHelper.addSource(types, urlFunction);
     }
 
     /**
@@ -85,11 +81,5 @@ class ScratchStorage {
         });
     }
 }
-
-/**
- * Export the Asset class so that clients can use it for asset-save requests.
- * @type {Asset}
- */
-ScratchStorage.Asset = Asset;
 
 module.exports = ScratchStorage;
