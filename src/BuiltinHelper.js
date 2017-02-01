@@ -90,17 +90,17 @@ class BuiltinHelper extends Helper {
      * @return {Promise.<Asset>} A promise for the contents of the asset.
      */
     load (assetType, assetId) {
+        let asset = null;
         if (this.assets.hasOwnProperty(assetType.name)) {
             const typeBucket = this.assets[assetType.name];
             if (typeBucket.hasOwnProperty(assetId)) {
                 /** @type{BuiltinAssetRecord} */
                 const assetRecord = typeBucket[assetId];
                 const assetData = new Uint8Array(assetRecord.data.buffer);
-                const asset = new Asset(assetRecord.type, assetRecord.id, assetRecord.format, assetData);
-                return Promise.resolve(asset);
+                asset = new Asset(assetRecord.type, assetRecord.id, assetRecord.format, assetData);
             }
         }
-        return Promise.reject(new Error(`No builtin asset of type ${assetType.name} for ID ${assetId}`));
+        return Promise.resolve(asset);
     }
 }
 
