@@ -77,11 +77,7 @@ class WebHelper extends Helper {
                                 }
                                 tryNextSource();
                             } else {
-                                /** @type {Buffer} */
-                                const buffer = response.body;
-
-                                // Convert from Buffer to Uint8Array, assuming Node 4.x+ or compatible Webpack
-                                asset.data = new Uint8Array(buffer.buffer);
+                                asset.data = response.body;
                                 fulfill(asset);
                             }
                         },
