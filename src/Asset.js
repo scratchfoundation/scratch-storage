@@ -1,3 +1,5 @@
+const TextDecoder = require('text-encoding').TextDecoder;
+
 class Asset {
     /**
      * Construct an Asset.
@@ -24,6 +26,14 @@ class Asset {
 
         /** @type {Asset[]} */
         this.dependencies = [];
+    }
+
+    /**
+     * @returns {string} - This asset's data, decoded as text.
+     */
+    decodeText () {
+        const decoder = new TextDecoder();
+        return decoder.decode(this.data);
     }
 }
 
