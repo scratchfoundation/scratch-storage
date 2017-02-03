@@ -15,12 +15,11 @@
     "lint": "./node_modules/.bin/eslint .",
     "prepublish": "npm run build",
     "prepublish-watch": "npm run watch",
-    "start": "./node_modules/.bin/webpack-dev-server",
     "tap-integration": "./node_modules/.bin/tap ./test/integration/*.js",
     "tap-unit": "./node_modules/.bin/tap ./test/unit/*.js",
     "test": "npm run lint && npm run tap-unit && npm run tap-integration",
     "version": "./node_modules/.bin/json -f package.json -I -e \"this.repository.sha = '$(git log -n1 --pretty=format:%H)'\"",
-    "watch": "./node_modules/.bin/webpack --progress --colors --watch-poll"
+    "watch": "./node_modules/.bin/webpack --progress --colors --watch"
   },
   "devDependencies": {
     "babel-core": "6.22.1",
@@ -38,6 +37,6 @@
     "json-loader": "0.5.4",
     "localforage": "1.4.3",
     "tap": "8.0.1",
-    "webpack": "1.14.0"
+    "webpack": "2.2.1"
   }
 }
