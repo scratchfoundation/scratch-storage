@@ -2,7 +2,13 @@
 require('babel-polyfill');
 
 /**
+ * Scratch namespace.
+ * @type {Object}
+ */
+self.Scratch = self.Scratch || {};
+
+/**
  * Export for use on a web page.
  * @type {ScratchStorage}
  */
-self.ScratchStorage = require('./index');
+self.Scratch.Storage = require('./index');
