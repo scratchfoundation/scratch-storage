@@ -35,6 +35,19 @@ class Asset {
         const decoder = new TextDecoder();
         return decoder.decode(this.data);
     }
+
+    /**
+     * @param {string} contentType - The content type to be included in the data URI.
+     * @returns {string} - A data URI representing the asset's data.
+     */
+    encodeDataURI(contentType) {
+        return [
+            'data:',
+            contentType,
+            ';base64,',
+            this.data.toString('base64')
+        ].join('');
+    }
 }
 
 module.exports = Asset;
