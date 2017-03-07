@@ -37,13 +37,13 @@ class Asset {
     }
 
     /**
-     * @param {string} contentType - The content type to be included in the data URI.
+     * @param {string} [contentType] - Optionally override the content type to be included in the data URI.
      * @returns {string} - A data URI representing the asset's data.
      */
-    encodeDataURI(contentType) {
+    encodeDataURI (contentType) {
         return [
             'data:',
-            contentType,
+            contentType || this.assetType.contentType,
             ';base64,',
             this.data.toString('base64')
         ].join('');
