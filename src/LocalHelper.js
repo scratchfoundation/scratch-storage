@@ -28,7 +28,11 @@ class LocalHelper extends Helper {
             const fileName = [assetId, assetType.runtimeFormat].join('.');
             localforage.getItem(fileName).then(
                 data => {
-                    fulfill(new Asset(assetType, assetId, assetType.runtimeFormat, data));
+                    if (data === null) {
+                        fulfill(null);
+                    } else {
+                        fulfill(new Asset(assetType, assetId, assetType.runtimeFormat, data));
+                    }
                 },
                 error => {
                     reject(error);

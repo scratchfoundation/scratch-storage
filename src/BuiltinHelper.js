@@ -10,7 +10,7 @@ const Helper = require('./Helper');
  * @property {AssetType} type - The type of the asset.
  * @property {DataFormat} format - The format of the asset's data.
  * @property {string} id - The asset's unique ID.
- * @property {Uint8Array} data - The asset's data in string form.
+ * @property {Buffer} data - The asset's data.
  */
 
 /**
@@ -21,19 +21,19 @@ const DefaultAssets = [
         type: AssetType.ImageBitmap,
         format: DataFormat.PNG,
         id: null,
-        data: require('bin!./builtins/defaultBitmap.png') // eslint-disable-line global-require
+        data: require('binary-loader!./builtins/defaultBitmap.png') // eslint-disable-line global-require
     },
     {
         type: AssetType.Sound,
         format: DataFormat.WAV,
         id: null,
-        data: require('bin!./builtins/defaultSound.wav') // eslint-disable-line global-require
+        data: require('binary-loader!./builtins/defaultSound.wav') // eslint-disable-line global-require
     },
     {
         type: AssetType.ImageVector,
         format: DataFormat.SVG,
         id: null,
-        data: require('bin!./builtins/defaultVector.svg') // eslint-disable-line global-require
+        data: require('binary-loader!./builtins/defaultVector.svg') // eslint-disable-line global-require
     }
 ];
 
@@ -90,17 +90,16 @@ class BuiltinHelper extends Helper {
      * @return {Promise.<Asset>} A promise for the contents of the asset.
      */
     load (assetType, assetId) {
+        let asset = null;
         if (this.assets.hasOwnProperty(assetType.name)) {
             const typeBucket = this.assets[assetType.name];
             if (typeBucket.hasOwnProperty(assetId)) {
                 /** @type{BuiltinAssetRecord} */
                 const assetRecord = typeBucket[assetId];
-                const assetData = new Uint8Array(assetRecord.data.buffer);
-                const asset = new Asset(assetRecord.type, assetRecord.id, assetRecord.format, assetData);
-                return Promise.resolve(asset);
+                asset = new Asset(assetRecord.type, assetRecord.id, assetRecord.format, assetRecord.data);
             }
         }
-        return Promise.reject(new Error(`No builtin asset of type ${assetType.name} for ID ${assetId}`));
+        return Promise.resolve(asset);
     }
 }
 

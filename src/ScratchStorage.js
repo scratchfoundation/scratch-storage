@@ -50,6 +50,10 @@ class ScratchStorage {
      * @param {AssetType} assetType - The type of asset to fetch. This also determines which asset store to use.
      * @param {string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
      * @return {Promise.<Asset>} A promise for the requested Asset.
+     *   If the promise is fulfilled with non-null, the value is the requested asset or a fallback.
+     *   If the promise is fulfilled with null, the desired asset could not be found with the current asset sources.
+     *   If the promise is rejected, there was an error on at least one asset source. HTTP 404 does not count as an
+     *   error here, but (for example) HTTP 403 does.
      */
     load (assetType, assetId) {
         /** @type {Helper[]} */
@@ -63,8 +67,13 @@ class ScratchStorage {
                     helpers[helperIndex++].load(assetType, assetId)
                         .then(
                             asset => {
-                                // TODO? this.localHelper.cache(assetType, assetId, asset);
-                                fulfill(asset);
+                                if (asset === null) {
+                                    tryNextHelper();
+                                } else {
+                                    // TODO? this.localHelper.cache(assetType, assetId, asset);
+                                    // Note that other attempts may have caused errors, effectively suppressed here.
+                                    fulfill(asset);
+                                }
                             },
                             error => {
                                 errors.push(error);
@@ -72,7 +81,11 @@ class ScratchStorage {
                                 tryNextHelper();
                             }
                         );
+                } else if (errors.length === 0) {
+                    // Nothing went wrong but we couldn't find the asset.
+                    fulfill(null);
                 } else {
+                    // At least one thing went wrong and also we couldn't find the asset.
                     reject(errors);
                 }
             };

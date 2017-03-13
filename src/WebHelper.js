@@ -72,14 +72,12 @@ class WebHelper extends Helper {
                     got(url, options).then(
                         response => {
                             if (response.status < 200 || response.status >= 300) {
-                                errors.push({url: url, result: response});
+                                if (response.status !== 404) {
+                                    errors.push({url: url, result: response});
+                                }
                                 tryNextSource();
                             } else {
-                                /** @type {Buffer} */
-                                const buffer = response.body;
-
-                                // Convert from Buffer to Uint8Array, assuming Node 4.x+ or compatible Webpack
-                                asset.data = new Uint8Array(buffer.buffer);
+                                asset.data = response.body;
                                 fulfill(asset);
                             }
                         },
@@ -90,7 +88,7 @@ class WebHelper extends Helper {
                 } else if (errors.length > 0) {
                     reject(errors);
                 } else {
-                    reject(new Error('No sources matching asset'));
+                    fulfill(null); // no sources matching asset
                 }
             };
 

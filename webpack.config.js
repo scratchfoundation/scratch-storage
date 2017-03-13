@@ -3,20 +3,16 @@ const webpack = require('webpack');
 
 const base = {
     module: {
-        loaders: [
+        rules: [
             {
                 include: [
                     path.resolve(__dirname, 'src')
                 ],
                 test: /\.js$/,
                 loader: 'babel-loader',
-                query: {
+                options: {
                     presets: ['es2015']
                 }
-            },
-            {
-                test: /\.json$/,
-                loader: 'json-loader'
             }
         ]
     },
@@ -24,9 +20,7 @@ const base = {
         new webpack.optimize.UglifyJsPlugin({
             include: /\.min\.js$/,
             minimize: true,
-            compress: {
-                warnings: false
-            }
+            sourceMap: true
         })
     ]
 };
