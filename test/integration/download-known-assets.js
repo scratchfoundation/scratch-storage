@@ -2,7 +2,8 @@ const crypto = require('crypto');
 const test = require('tap').test;
 
 const ScratchStorage = require('../../dist/node/scratch-storage');
-const {Asset, AssetType} = ScratchStorage;
+const Asset = ScratchStorage.Asset;
+const AssetType = ScratchStorage.AssetType;
 
 /**
  *
@@ -39,7 +40,7 @@ const testAssets = [
     }
 ];
 
-let storage;
+var storage;
 test('constructor', t => {
     storage = new ScratchStorage();
     t.type(storage, ScratchStorage);
@@ -51,10 +52,10 @@ test('addWebSource', t => {
         storage.addWebSource(
             [AssetType.Project],
             asset => {
-                const [projectId, revision] = asset.assetId.split('.');
-                return revision ?
-                    `https://cdn.projects.scratch.mit.edu/internalapi/project/${projectId}/get/${revision}` :
-                    `https://cdn.projects.scratch.mit.edu/internalapi/project/${projectId}/get/`;
+                const idParts = asset.assetId.split('.');
+                return idParts[1] ?
+                    `https://cdn.projects.scratch.mit.edu/internalapi/project/${idParts[0]}/get/${idParts[1]}` :
+                    `https://cdn.projects.scratch.mit.edu/internalapi/project/${idParts[0]}/get/`;
             });
     });
     t.doesNotThrow(() => {
@@ -68,7 +69,7 @@ test('addWebSource', t => {
 
 test('load', t => {
     const promises = [];
-    for (let i = 0; i < testAssets.length; ++i) {
+    for (var i = 0; i < testAssets.length; ++i) {
         const assetInfo = testAssets[i];
 
         const promise = storage.load(assetInfo.type, assetInfo.id);
