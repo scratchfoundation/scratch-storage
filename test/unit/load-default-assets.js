@@ -2,13 +2,12 @@ const crypto = require('crypto');
 const test = require('tap').test;
 
 const ScratchStorage = require('../../dist/node/scratch-storage');
-const Asset = ScratchStorage.Asset;
-const AssetType = ScratchStorage.AssetType;
+const {Asset, AssetType} = ScratchStorage;
 
 const defaultAssetTypes = [AssetType.ImageBitmap, AssetType.ImageVector, AssetType.Sound];
 const defaultIds = {};
 
-var storage;
+let storage;
 test('constructor', t => {
     storage = new ScratchStorage();
     t.type(storage, ScratchStorage);
@@ -16,7 +15,7 @@ test('constructor', t => {
 });
 
 test('getDefaultAssetId', t => {
-    for (var i = 0; i < defaultAssetTypes.length; ++i) {
+    for (let i = 0; i < defaultAssetTypes.length; ++i) {
         const assetType = defaultAssetTypes[i];
         const id = storage.getDefaultAssetId(assetType);
         t.type(id, 'string');
@@ -27,7 +26,7 @@ test('getDefaultAssetId', t => {
 
 test('load', t => {
     const promises = [];
-    for (var i = 0; i < defaultAssetTypes.length; ++i) {
+    for (let i = 0; i < defaultAssetTypes.length; ++i) {
         const assetType = defaultAssetTypes[i];
         const id = defaultIds[assetType.name];
 
