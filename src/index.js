@@ -7,6 +7,15 @@ const ScratchStorage = require('./ScratchStorage');
  * @type {ScratchStorage}
  */
 module.exports = Object.assign(ScratchStorage, {
+    /**
+     * Please use the `Asset` member of a storage instance instead.
+     * @deprecated
+     */
     Asset: Asset,
+
+    /**
+     * Please use the `AssetType` member of a storage instance instead.
+     * @deprecated
+     */
     AssetType: AssetType
 });

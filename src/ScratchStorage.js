@@ -1,3 +1,5 @@
+const Asset = require('./Asset');
+const AssetType = require('./AssetType');
 const BuiltinHelper = require('./BuiltinHelper');
 const LocalHelper = require('./LocalHelper');
 const WebHelper = require('./WebHelper');
@@ -94,5 +96,10 @@ class ScratchStorage {
         });
     }
 }
+
+Object.assign(ScratchStorage.prototype, {
+    Asset,
+    AssetType
+});
 
 module.exports = ScratchStorage;
