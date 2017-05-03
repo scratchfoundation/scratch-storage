@@ -6,9 +6,12 @@ cache:
 node_js:
   - "4"
   - "node"
-before_install:
+install:
   - npm update
   - npm prune
+script:
+  - npm run test
+  - npm run build
 after_script:
 - |
   # RELEASE_BRANCHES and NPM_TOKEN defined in Travis settings panel
