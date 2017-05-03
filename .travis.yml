@@ -1,14 +1,18 @@
-language: node_js
-node_js:
-- "4"
-- "node"
 sudo: false
+language: node_js
 cache:
   directories:
-  - node_modules
+    - node_modules
+node_js:
+  - "4"
+  - "node"
 install:
-- npm install
-- npm update
+  - npm update
+  - npm prune
+script:
+  - npm run lint
+  - npm run build
+  - npm run tap
 after_script:
 - |
   # RELEASE_BRANCHES and NPM_TOKEN defined in Travis settings panel
@@ -23,9 +27,5 @@ after_script:
     # Don't release on PR builds
     $TRAVIS_PULL_REQUEST = "false"
   ]]; then
-    # Authenticate NPM
-    echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
-    # Set version to timestamp
-    npm --no-git-tag-version version $($(npm bin)/json -f package.json version)-prerelease.$(date +%s)
-    npm publish
+    npm run semantic-release
   fi
