@@ -10,8 +10,9 @@ install:
   - npm update
   - npm prune
 script:
-  - npm run test
+  - npm run lint
   - npm run build
+  - npm run tap
 after_script:
 - |
   # RELEASE_BRANCHES and NPM_TOKEN defined in Travis settings panel
