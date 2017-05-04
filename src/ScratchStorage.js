@@ -49,6 +49,10 @@ class ScratchStorage {
         return AssetType;
     }
 
+    get (assetId) {
+        return this.builtinHelper.get(assetId);
+    }
+
     /**
      * Register a web-based source for assets. Sources will be checked in order of registration.
      * @param {Array.<AssetType>} types - The types of asset provided by this source.
@@ -100,13 +104,21 @@ class ScratchStorage {
         return new Promise((fulfill, reject) => {
             const tryNextHelper = () => {
                 if (helperIndex < helpers.length) {
-                    helpers[helperIndex++].load(assetType, assetId)
+                    const helper = helpers[helperIndex++];
+                    helper.load(assetType, assetId)
                         .then(
                             asset => {
                                 if (asset === null) {
                                     tryNextHelper();
                                 } else {
                                     // TODO? this.localHelper.cache(assetType, assetId, asset);
+                                    if (helper !== this.builtinHelper) {
+                                        asset.assetId = this.builtinHelper.cache(
+                                            assetType,
+                                            asset.dataFormat,
+                                            asset.data
+                                        );
+                                    }
                                     // Note that other attempts may have caused errors, effectively suppressed here.
                                     fulfill(asset);
                                 }

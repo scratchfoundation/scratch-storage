@@ -14,6 +14,14 @@ class Asset {
 
         /** @type {string} */
         this.assetId = assetId;
+
+        this.setData(data, dataFormat);
+
+        /** @type {Asset[]} */
+        this.dependencies = [];
+    }
+
+    setData (data, dataFormat) {
         if (data && !dataFormat) {
             throw new Error('Data provided without specifying its format');
         }
@@ -23,9 +31,6 @@ class Asset {
 
         /** @type {Buffer} */
         this.data = data;
-
-        /** @type {Asset[]} */
-        this.dependencies = [];
     }
 
     /**
@@ -41,12 +46,8 @@ class Asset {
      * @returns {string} - A data URI representing the asset's data.
      */
     encodeDataURI (contentType) {
-        return [
-            'data:',
-            contentType || this.assetType.contentType,
-            ';base64,',
-            this.data.toString('base64')
-        ].join('');
+        contentType = contentType || this.assetType.contentType;
+        return `data:${contentType};base64,${this.data.toString('base64')}`;
     }
 }
 
