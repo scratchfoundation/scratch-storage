@@ -1,5 +1,15 @@
 const TextDecoder = require('text-encoding').TextDecoder;
 
+const memoizedToString = (function () {
+    const strings = {};
+    return (assetId, data) => {
+        if (!strings.hasOwnProperty(assetId)) {
+            strings[assetId] = data.toString('base64');
+        }
+        return strings[assetId];
+    };
+}());
+
 class Asset {
     /**
      * Construct an Asset.
@@ -47,7 +57,7 @@ class Asset {
      */
     encodeDataURI (contentType) {
         contentType = contentType || this.assetType.contentType;
-        return `data:${contentType};base64,${this.data.toString('base64')}`;
+        return `data:${contentType};base64,${memoizedToString(this.assetId, this.data)}`;
     }
 }
 
