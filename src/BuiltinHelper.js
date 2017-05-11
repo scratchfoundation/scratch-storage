@@ -54,9 +54,9 @@ class BuiltinHelper extends Helper {
          */
         this.assets = {};
 
-        BuiltinAssets.forEach(
-            assetRecord => this.cache(assetRecord.type, assetRecord.format, assetRecord.data, assetRecord.id)
-        );
+        BuiltinAssets.forEach(assetRecord => {
+            assetRecord.id = this.cache(assetRecord.type, assetRecord.format, assetRecord.data, assetRecord.id);
+        });
     }
 
     /**
