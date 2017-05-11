@@ -70,6 +70,12 @@ class BuiltinHelper extends Helper {
         }
     }
 
+
+    /**
+     * Synchronously fetch a cached asset for a given asset id. Returns null if not found.
+     * @param {string} assetId - The id for the asset to fetch.
+     * @returns {?Asset} The asset for assetId, if it exists.
+     */
     get (assetId) {
         let asset = null;
         if (this.assets.hasOwnProperty(assetId)) {
@@ -80,6 +86,14 @@ class BuiltinHelper extends Helper {
         return asset;
     }
 
+    /**
+     * Cache an asset for future lookups by ID.
+     * @param {AssetType} assetType - The type of the asset to cache.
+     * @param {DataFormat} dataFormat - The dataFormat of the data for the cached asset.
+     * @param {Buffer} data - The data for the cached asset.
+     * @param {string} id - The id for the cached asset.
+     * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
+     */
     cache (assetType, dataFormat, data, id) {
         if (!dataFormat) throw new Error('Data cached without specifying its format');
         if (id) {

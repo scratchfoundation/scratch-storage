@@ -49,6 +49,11 @@ class ScratchStorage {
         return AssetType;
     }
 
+    /**
+     * Synchronously fetch a cached asset from built-in storage. Assets are cached when they are loaded.
+     * @param {string} assetId - The id of the asset to fetch.
+     * @returns {?Asset} The asset, if it exists.
+     */
     get (assetId) {
         return this.builtinHelper.get(assetId);
     }
