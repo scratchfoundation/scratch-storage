@@ -117,11 +117,12 @@ class ScratchStorage {
                                     tryNextHelper();
                                 } else {
                                     // TODO? this.localHelper.cache(assetType, assetId, asset);
-                                    if (helper !== this.builtinHelper) {
+                                    if (helper !== this.builtinHelper && assetType.immutable) {
                                         asset.assetId = this.builtinHelper.cache(
                                             assetType,
                                             asset.dataFormat,
-                                            asset.data
+                                            asset.data,
+                                            assetId
                                         );
                                     }
                                     // Note that other attempts may have caused errors, effectively suppressed here.

@@ -9,7 +9,7 @@ const Helper = require('./Helper');
  * @typedef {object} BuiltinAssetRecord
  * @property {AssetType} type - The type of the asset.
  * @property {DataFormat} format - The format of the asset's data.
- * @property {string} id - The asset's unique ID.
+ * @property {?string} id - The asset's unique ID.
  * @property {Buffer} data - The asset's data.
  */
 
@@ -97,8 +97,8 @@ class BuiltinHelper extends Helper {
     cache (assetType, dataFormat, data, id) {
         if (!dataFormat) throw new Error('Data cached without specifying its format');
         if (id) {
-            if (this.assets.hasOwnProperty(id)) return id;
-        } else {
+            if (this.assets.hasOwnProperty(id) && assetType.immutable) return id;
+        } else if (assetType.immutable) {
             const hash = crypto.createHash('md5');
             hash.update(data);
             id = hash.digest('hex');
