@@ -77,7 +77,7 @@ class WebHelper extends Helper {
                                 }
                                 tryNextSource();
                             } else {
-                                asset.data = response.body;
+                                asset.setData(response.body, assetType.runtimeFormat);
                                 fulfill(asset);
                             }
                         },

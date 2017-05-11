@@ -50,6 +50,15 @@ class ScratchStorage {
     }
 
     /**
+     * Synchronously fetch a cached asset from built-in storage. Assets are cached when they are loaded.
+     * @param {string} assetId - The id of the asset to fetch.
+     * @returns {?Asset} The asset, if it exists.
+     */
+    get (assetId) {
+        return this.builtinHelper.get(assetId);
+    }
+
+    /**
      * Register a web-based source for assets. Sources will be checked in order of registration.
      * @param {Array.<AssetType>} types - The types of asset provided by this source.
      * @param {UrlFunction} urlFunction - A function which computes a URL from an Asset.
@@ -100,13 +109,22 @@ class ScratchStorage {
         return new Promise((fulfill, reject) => {
             const tryNextHelper = () => {
                 if (helperIndex < helpers.length) {
-                    helpers[helperIndex++].load(assetType, assetId)
+                    const helper = helpers[helperIndex++];
+                    helper.load(assetType, assetId)
                         .then(
                             asset => {
                                 if (asset === null) {
                                     tryNextHelper();
                                 } else {
                                     // TODO? this.localHelper.cache(assetType, assetId, asset);
+                                    if (helper !== this.builtinHelper && assetType.immutable) {
+                                        asset.assetId = this.builtinHelper.cache(
+                                            assetType,
+                                            asset.dataFormat,
+                                            asset.data,
+                                            assetId
+                                        );
+                                    }
                                     // Note that other attempts may have caused errors, effectively suppressed here.
                                     fulfill(asset);
                                 }

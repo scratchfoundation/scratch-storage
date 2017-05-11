@@ -9,7 +9,7 @@ const Helper = require('./Helper');
  * @typedef {object} BuiltinAssetRecord
  * @property {AssetType} type - The type of the asset.
  * @property {DataFormat} format - The format of the asset's data.
- * @property {string} id - The asset's unique ID.
+ * @property {?string} id - The asset's unique ID.
  * @property {Buffer} data - The asset's data.
  */
 
@@ -54,22 +54,9 @@ class BuiltinHelper extends Helper {
          */
         this.assets = {};
 
-        const numAssets = BuiltinAssets.length;
-        for (let assetIndex = 0; assetIndex < numAssets; ++assetIndex) {
-            const assetRecord = BuiltinAssets[assetIndex];
-            const typeName = assetRecord.type.name;
-
-            /** @type {AssetIdMap} */
-            const typeBucket = this.assets[typeName] = this.assets[typeName] || {};
-
-            if (!assetRecord.id) {
-                const hash = crypto.createHash('md5');
-                hash.update(assetRecord.data);
-                assetRecord.id = hash.digest('hex');
-            }
-
-            typeBucket[assetRecord.id] = assetRecord;
-        }
+        BuiltinAssets.forEach(assetRecord => {
+            assetRecord.id = this.cache(assetRecord.type, assetRecord.format, assetRecord.data, assetRecord.id);
+        });
     }
 
     /**
@@ -83,6 +70,48 @@ class BuiltinHelper extends Helper {
         }
     }
 
+
+    /**
+     * Synchronously fetch a cached asset for a given asset id. Returns null if not found.
+     * @param {string} assetId - The id for the asset to fetch.
+     * @returns {?Asset} The asset for assetId, if it exists.
+     */
+    get (assetId) {
+        let asset = null;
+        if (this.assets.hasOwnProperty(assetId)) {
+            /** @type{BuiltinAssetRecord} */
+            const assetRecord = this.assets[assetId];
+            asset = new Asset(assetRecord.type, assetRecord.id, assetRecord.format, assetRecord.data);
+        }
+        return asset;
+    }
+
+    /**
+     * Cache an asset for future lookups by ID.
+     * @param {AssetType} assetType - The type of the asset to cache.
+     * @param {DataFormat} dataFormat - The dataFormat of the data for the cached asset.
+     * @param {Buffer} data - The data for the cached asset.
+     * @param {string} id - The id for the cached asset.
+     * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
+     */
+    cache (assetType, dataFormat, data, id) {
+        if (!dataFormat) throw new Error('Data cached without specifying its format');
+        if (id) {
+            if (this.assets.hasOwnProperty(id) && assetType.immutable) return id;
+        } else if (assetType.immutable) {
+            const hash = crypto.createHash('md5');
+            hash.update(data);
+            id = hash.digest('hex');
+        }
+        this.assets[id] = {
+            type: assetType,
+            format: dataFormat,
+            id: id,
+            data: data
+        };
+        return id;
+    }
+
     /**
      * Fetch an asset but don't process dependencies.
      * @param {AssetType} assetType - The type of asset to fetch.
@@ -90,16 +119,7 @@ class BuiltinHelper extends Helper {
      * @return {Promise.<Asset>} A promise for the contents of the asset.
      */
     load (assetType, assetId) {
-        let asset = null;
-        if (this.assets.hasOwnProperty(assetType.name)) {
-            const typeBucket = this.assets[assetType.name];
-            if (typeBucket.hasOwnProperty(assetId)) {
-                /** @type{BuiltinAssetRecord} */
-                const assetRecord = typeBucket[assetId];
-                asset = new Asset(assetRecord.type, assetRecord.id, assetRecord.format, assetRecord.data);
-            }
-        }
-        return Promise.resolve(asset);
+        return Promise.resolve(this.get(assetId));
     }
 }
 
