@@ -1,8 +1,10 @@
-const Asset = require('./Asset');
-const AssetType = require('./AssetType');
 const BuiltinHelper = require('./BuiltinHelper');
 const LocalHelper = require('./LocalHelper');
 const WebHelper = require('./WebHelper');
+
+const _Asset = require('./Asset');
+const _AssetType = require('./AssetType');
+const _DataFormat = require('./DataFormat');
 
 class ScratchStorage {
     constructor () {
@@ -20,7 +22,7 @@ class ScratchStorage {
      * @constructor
      */
     get Asset () {
-        return Asset;
+        return _Asset;
     }
 
     /**
@@ -28,7 +30,15 @@ class ScratchStorage {
      * @constructor
      */
     get AssetType () {
-        return AssetType;
+        return _AssetType;
+    }
+
+    /**
+     * @return {DataFormat} - the list of supported data formats.
+     * @constructor
+     */
+    get DataFormat () {
+        return _DataFormat;
     }
 
     /**
@@ -37,7 +47,7 @@ class ScratchStorage {
      * @constructor
      */
     static get Asset () {
-        return Asset;
+        return _Asset;
     }
 
     /**
@@ -46,7 +56,7 @@ class ScratchStorage {
      * @constructor
      */
     static get AssetType () {
-        return AssetType;
+        return _AssetType;
     }
 
     /**
@@ -94,23 +104,25 @@ class ScratchStorage {
      * Fetch an asset by type & ID.
      * @param {AssetType} assetType - The type of asset to fetch. This also determines which asset store to use.
      * @param {string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
+     * @param {DataFormat} [dataFormat] - Optional: load this format instead of the AssetType's default.
      * @return {Promise.<Asset>} A promise for the requested Asset.
      *   If the promise is fulfilled with non-null, the value is the requested asset or a fallback.
      *   If the promise is fulfilled with null, the desired asset could not be found with the current asset sources.
      *   If the promise is rejected, there was an error on at least one asset source. HTTP 404 does not count as an
      *   error here, but (for example) HTTP 403 does.
      */
-    load (assetType, assetId) {
+    load (assetType, assetId, dataFormat) {
         /** @type {Helper[]} */
         const helpers = [this.builtinHelper, this.localHelper, this.webHelper];
         const errors = [];
         let helperIndex = 0;
+        dataFormat = dataFormat || assetType.runtimeFormat;
 
         return new Promise((fulfill, reject) => {
             const tryNextHelper = () => {
                 if (helperIndex < helpers.length) {
                     const helper = helpers[helperIndex++];
-                    helper.load(assetType, assetId)
+                    helper.load(assetType, assetId, dataFormat)
                         .then(
                             asset => {
                                 if (asset === null) {

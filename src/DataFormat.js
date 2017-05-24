@@ -1,8 +1,9 @@
 /**
  * Enumeration of the supported data formats.
- * @type {Object.<string,string>}
+ * @enum {string}
  */
 const DataFormat = {
+    JPG: 'jpg',
     JSON: 'json',
     PNG: 'png',
     SB2: 'sb2',

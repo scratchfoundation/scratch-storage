@@ -38,14 +38,15 @@ class WebHelper extends Helper {
      * Fetch an asset but don't process dependencies.
      * @param {AssetType} assetType - The type of asset to fetch.
      * @param {string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
+     * @param {DataFormat} dataFormat - The file format / file extension of the asset to fetch: PNG, JPG, etc.
      * @return {Promise.<Asset>} A promise for the contents of the asset.
      */
-    load (assetType, assetId) {
+    load (assetType, assetId, dataFormat) {
 
         /** @type {Array.<{url:string, result:*}>} List of URLs attempted & errors encountered. */
         const errors = [];
         const sources = this.sources.slice();
-        const asset = new Asset(assetType, assetId);
+        const asset = new Asset(assetType, assetId, dataFormat);
         let sourceIndex = 0;
 
         return new Promise((fulfill, reject) => {
@@ -77,7 +78,7 @@ class WebHelper extends Helper {
                                 }
                                 tryNextSource();
                             } else {
-                                asset.setData(response.body, assetType.runtimeFormat);
+                                asset.setData(response.body, dataFormat);
                                 fulfill(asset);
                             }
                         },
