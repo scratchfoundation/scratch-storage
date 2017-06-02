@@ -16,6 +16,7 @@ test('constructor', t => {
  * @typedef {object} AssetTestInfo
  * @property {AssetType} type - The type of the asset.
  * @property {string} id - The asset's unique ID.
+ * @property {DataFormat} [ext] - Optional: the asset's data format / file extension.
  */
 const testAssets = [
     {
@@ -34,9 +35,27 @@ const testAssets = [
         md5: 'f88bf1935daea28f8ca098462a31dbb0'
     },
     {
+        type: storage.AssetType.ImageVector,
+        id: '6e8bd9ae68fdb02b7e1e3df656a75635', // cat1-b
+        md5: '6e8bd9ae68fdb02b7e1e3df656a75635',
+        ext: storage.DataFormat.SVG
+    },
+    {
         type: storage.AssetType.ImageBitmap,
         id: '7e24c99c1b853e52f8e7f9004416fa34', // squirrel
         md5: '7e24c99c1b853e52f8e7f9004416fa34'
+    },
+    {
+        type: storage.AssetType.ImageBitmap,
+        id: '66895930177178ea01d9e610917f8acf', // bus
+        md5: '66895930177178ea01d9e610917f8acf',
+        ext: storage.DataFormat.PNG
+    },
+    {
+        type: storage.AssetType.ImageBitmap,
+        id: 'fe5e3566965f9de793beeffce377d054', // building at MIT
+        md5: 'fe5e3566965f9de793beeffce377d054',
+        ext: storage.DataFormat.JPG
     },
     {
         type: storage.AssetType.Sound,
@@ -59,7 +78,7 @@ test('addWebSource', t => {
     t.doesNotThrow(() => {
         storage.addWebSource(
             [storage.AssetType.ImageVector, storage.AssetType.ImageBitmap, storage.AssetType.Sound],
-            asset => `https://cdn.assets.scratch.mit.edu/internalapi/asset/${asset.assetId}.${asset.assetType.runtimeFormat}/get/`
+            asset => `https://cdn.assets.scratch.mit.edu/internalapi/asset/${asset.assetId}.${asset.dataFormat}/get/`
         );
     });
     t.end();
@@ -82,12 +101,11 @@ test('load', t => {
     for (var i = 0; i < testAssets.length; ++i) {
         const assetInfo = testAssets[i];
 
-        const promise = storage.load(assetInfo.type, assetInfo.id);
+        var promise = storage.load(assetInfo.type, assetInfo.id, assetInfo.ext);
         t.type(promise, 'Promise');
 
+        promise = promise.then(asset => checkAsset(assetInfo, asset));
         promises.push(promise);
-
-        promise.then(asset => checkAsset(assetInfo, asset));
     }
 
     return Promise.all(promises);

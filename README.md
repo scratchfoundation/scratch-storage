@@ -53,7 +53,7 @@ var getAssetUrl = function (asset) {
         'https://assets.example.com/path/to/assets/',
         asset.assetId,
         '.',
-        asset.assetType.runtimeFormat,
+        asset.dataFormat,
         '/get/'
     ];
     return assetUrlParts.join('');
@@ -71,7 +71,7 @@ If you're using ES6 you may be able to simplify all of the above quite a bit:
 ```js
 storage.addWebSource(
     [AssetType.ImageVector, AssetType.ImageBitmap, AssetType.Sound],
-    asset => `https://assets.example.com/path/to/assets/${asset.assetId}.${asset.assetType.runtimeFormat}/get/`);
+    asset => `https://assets.example.com/path/to/assets/${asset.assetId}.${asset.dataFormat}/get/`);
 ```
 
 Once the storage module is aware of the sources you need, you can start loading assets:

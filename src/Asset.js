@@ -25,7 +25,7 @@ class Asset {
         /** @type {string} */
         this.assetId = assetId;
 
-        this.setData(data, dataFormat);
+        this.setData(data, dataFormat || assetType.runtimeFormat);
 
         /** @type {Asset[]} */
         this.dependencies = [];
