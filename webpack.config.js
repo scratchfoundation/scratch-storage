@@ -46,6 +46,9 @@ module.exports = [
         entry: {
             'scratch-storage': './src/index.js'
         },
+        externals: {
+            got: 'got'
+        },
         output: {
             library: 'ScratchStorage',
             libraryTarget: 'commonjs2',
