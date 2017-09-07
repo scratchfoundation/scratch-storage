@@ -1,10 +1,11 @@
 const TextDecoder = require('text-encoding').TextDecoder;
+const base64js = require('base64-js');
 
 const memoizedToString = (function () {
     const strings = {};
     return (assetId, data) => {
         if (!strings.hasOwnProperty(assetId)) {
-            strings[assetId] = data.toString('base64');
+            strings[assetId] = base64js.fromByteArray(data);
         }
         return strings[assetId];
     };
