@@ -68,7 +68,7 @@ class WebHelper extends Helper {
                 if (urlFunction) {
                     const url = urlFunction(asset);
 
-                    nets({ url: url }, function(err, resp, body) {
+                    nets({url: url}, (err, resp, body) => {
                         // body is a Buffer
                         if (err) {
                             tryNextSource();
