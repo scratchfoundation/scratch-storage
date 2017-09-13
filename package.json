@@ -8,7 +8,8 @@
     "type": "git",
     "url": "https://github.com/LLK/scratch-storage.git"
   },
-  "main": "./dist/web_commonjs2/scratch-storage.js",
+  "main": "./dist/node/scratch-storage.js",
+  "browser": "./dist/web/scratch-storage.js",
   "scripts": {
     "build": "./node_modules/.bin/webpack --progress --colors --bail",
     "coverage": "./node_modules/.bin/tap ./test/{unit,integration}/*.js --coverage --coverage-report=lcov",
@@ -34,11 +35,10 @@
     "eslint-config-scratch": "3.1.0",
     "eslint-plugin-react": "6.9.0",
     "file-loader": "0.9.0",
-    "got": "5.7.1",
     "json": "^9.0.4",
     "json-loader": "0.5.4",
     "localforage": "1.5.0",
-    "nets": "^3.2.0",
+    "nets": "3.2.0",
     "semantic-release": "^6.3.2",
     "tap": "8.0.1",
     "text-encoding": "0.6.4",

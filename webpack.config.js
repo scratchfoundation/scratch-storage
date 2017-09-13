@@ -7,7 +7,7 @@ const base = {
         rules: [
             {
                 include: [
-                    path.resolve(__dirname, 'src')
+                    path.resolve('src')
                 ],
                 test: /\.js$/,
                 loader: 'babel-loader',
@@ -27,7 +27,7 @@ const base = {
 };
 
 module.exports = [
-    // Web + UMD
+    // Web-compatible
     Object.assign({}, base, {
         target: 'web',
         entry: {
@@ -35,26 +35,14 @@ module.exports = [
             'scratch-storage.min': './src/index-web.js'
         },
         output: {
-            path: __dirname,
-            filename: 'dist/web_umd/[name].js'
-        }
-    }),
-
-    // Web + commonjs2
-    Object.assign({}, base, {
-        target: 'web',
-        entry: {
-            'scratch-storage': './src/index.js'
-        },
-        output: {
             library: 'ScratchStorage',
-            libraryTarget: 'commonjs2',
-            path: __dirname,
-            filename: 'dist/web_commonjs2/[name].js'
+            libraryTarget: 'umd',
+            path: path.resolve('dist', 'web'),
+            filename: '[name].js'
         }
     }),
 
-    // Node + commonjs2
+    // Node-compatible
     Object.assign({}, base, {
         target: 'node',
         entry: {
@@ -63,8 +51,8 @@ module.exports = [
         output: {
             library: 'ScratchStorage',
             libraryTarget: 'commonjs2',
-            path: __dirname,
-            filename: 'dist/node_commonjs2/[name].js'
+            path: path.resolve('dist', 'node'),
+            filename: '[name].js'
         }
     })
 ];
