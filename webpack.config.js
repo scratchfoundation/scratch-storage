@@ -7,7 +7,7 @@ const base = {
         rules: [
             {
                 include: [
-                    path.resolve(__dirname, 'src')
+                    path.resolve('src')
                 ],
                 test: /\.js$/,
                 loader: 'babel-loader',
@@ -35,8 +35,10 @@ module.exports = [
             'scratch-storage.min': './src/index-web.js'
         },
         output: {
-            path: __dirname,
-            filename: 'dist/web/[name].js'
+            library: 'ScratchStorage',
+            libraryTarget: 'umd',
+            path: path.resolve('dist', 'web'),
+            filename: '[name].js'
         }
     }),
 
@@ -49,8 +51,8 @@ module.exports = [
         output: {
             library: 'ScratchStorage',
             libraryTarget: 'commonjs2',
-            path: __dirname,
-            filename: 'dist/node/[name].js'
+            path: path.resolve('dist', 'node'),
+            filename: '[name].js'
         }
     })
 ];
