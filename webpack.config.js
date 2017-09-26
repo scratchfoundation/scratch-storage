@@ -31,8 +31,8 @@ module.exports = [
     Object.assign({}, base, {
         target: 'web',
         entry: {
-            'scratch-storage': './src/index-web.js',
-            'scratch-storage.min': './src/index-web.js'
+            'scratch-storage': './src/index.js',
+            'scratch-storage.min': './src/index.js'
         },
         output: {
             library: 'ScratchStorage',
