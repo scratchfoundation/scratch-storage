@@ -1,4 +1,5 @@
 const TextDecoder = require('text-encoding').TextDecoder;
+const TextEncoder = require('text-encoding').TextEncoder;
 const base64js = require('base64-js');
 
 const memoizedToString = (function () {
@@ -50,6 +51,16 @@ class Asset {
     decodeText () {
         const decoder = new TextDecoder();
         return decoder.decode(this.data);
+    }
+
+    /**
+     * Same as `setData` but encodes text first.
+     * @param {string} data - the text data to encode and store.
+     * @param {DataFormat} dataFormat - the format of the data (DataFormat.SVG for example).
+     */
+    encodeTextData (data, dataFormat) {
+        const encoder = new TextEncoder();
+        this.setData(encoder.encode(data), dataFormat);
     }
 
     /**
