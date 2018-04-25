@@ -70,7 +70,7 @@ class WebHelper extends Helper {
 
                     nets({url: url}, (err, resp, body) => {
                         // body is a Buffer
-                        if (err) {
+                        if (err || Math.floor(resp.statusCode / 100) !== 2) {
                             tryNextSource();
                         } else {
                             asset.setData(body, dataFormat);
