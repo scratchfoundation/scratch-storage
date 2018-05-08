@@ -29,7 +29,7 @@
     "@commitlint/travis-cli": "6.1.0",
     "babel-core": "6.22.1",
     "babel-eslint": "7.1.1",
-    "babel-loader": "6.2.10",
+    "babel-loader": "^7.1.4",
     "babel-polyfill": "6.22.0",
     "babel-preset-es2015": "6.22.0",
     "base64-js": "1.2.1",
@@ -39,7 +39,7 @@
     "eslint": "3.14.1",
     "eslint-config-scratch": "3.1.0",
     "eslint-plugin-react": "6.9.0",
-    "file-loader": "0.9.0",
+    "file-loader": "1.1.11",
     "husky": "0.14.3",
     "js-md5": "0.6.1",
     "json": "^9.0.4",
@@ -50,7 +50,9 @@
     "tap": "8.0.1",
     "text-encoding": "0.6.4",
     "travis-after-all": "^1.4.4",
-    "webpack": "2.2.1"
+    "uglifyjs-webpack-plugin": "^1.2.5",
+    "webpack": "^4.8.0",
+    "webpack-cli": "^2.0.15"
   },
   "config": {
     "commitizen": {
