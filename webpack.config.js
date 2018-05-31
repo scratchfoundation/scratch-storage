@@ -56,6 +56,13 @@ module.exports = [
             libraryTarget: 'commonjs2',
             path: path.resolve('dist', 'node'),
             filename: '[name].js'
+        },
+        externals: {
+            'base64-js': true,
+            'js-md5': true,
+            'localforage': true,
+            'nets': true,
+            'text-encoding': true
         }
     })
 ];
