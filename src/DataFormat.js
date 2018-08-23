@@ -8,6 +8,7 @@ const DataFormat = {
     MP3: 'mp3',
     PNG: 'png',
     SB2: 'sb2',
+    SB3: 'sb3',
     SVG: 'svg',
     WAV: 'wav'
 };
