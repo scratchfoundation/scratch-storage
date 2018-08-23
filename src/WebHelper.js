@@ -69,7 +69,7 @@ class WebHelper extends Helper {
         const asset = new Asset(assetType, assetId, dataFormat);
         let storeIndex = 0;
 
-        return new Promise((fulfill, reject) => {
+        return new Promise((resolve, reject) => {
 
             const tryNextSource = () => {
 
@@ -106,13 +106,13 @@ class WebHelper extends Helper {
                             tryNextSource();
                         } else {
                             asset.setData(body, dataFormat);
-                            fulfill(asset);
+                            resolve(asset);
                         }
                     });
                 } else if (errors.length > 0) {
                     reject(errors);
                 } else {
-                    fulfill(null); // no sources matching asset
+                    resolve(null); // no stores matching asset
                 }
             };
 

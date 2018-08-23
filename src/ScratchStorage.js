@@ -130,8 +130,8 @@ class ScratchStorage {
      * @param {string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
      * @param {DataFormat} [dataFormat] - Optional: load this format instead of the AssetType's default.
      * @return {Promise.<Asset>} A promise for the requested Asset.
-     *   If the promise is fulfilled with non-null, the value is the requested asset or a fallback.
-     *   If the promise is fulfilled with null, the desired asset could not be found with the current asset sources.
+     *   If the promise is resolved with non-null, the value is the requested asset or a fallback.
+     *   If the promise is resolved with null, the desired asset could not be found with the current asset sources.
      *   If the promise is rejected, there was an error on at least one asset source. HTTP 404 does not count as an
      *   error here, but (for example) HTTP 403 does.
      */
@@ -142,7 +142,7 @@ class ScratchStorage {
         let helperIndex = 0;
         dataFormat = dataFormat || assetType.runtimeFormat;
 
-        return new Promise((fulfill, reject) => {
+        return new Promise((resolve, reject) => {
             const tryNextHelper = () => {
                 if (helperIndex < helpers.length) {
                     const helper = helpers[helperIndex++];
@@ -162,7 +162,7 @@ class ScratchStorage {
                                         );
                                     }
                                     // Note that other attempts may have caused errors, effectively suppressed here.
-                                    fulfill(asset);
+                                    resolve(asset);
                                 }
                             },
                             error => {
@@ -173,7 +173,7 @@ class ScratchStorage {
                         );
                 } else if (errors.length === 0) {
                     // Nothing went wrong but we couldn't find the asset.
-                    fulfill(null);
+                    resolve(null);
                 } else {
                     // At least one thing went wrong and also we couldn't find the asset.
                     reject(errors);
