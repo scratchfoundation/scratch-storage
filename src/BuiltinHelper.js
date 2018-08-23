@@ -1,5 +1,7 @@
 const md5 = require('js-md5');
 
+const log = require('./log');
+
 const Asset = require('./Asset');
 const AssetType = require('./AssetType');
 const DataFormat = require('./DataFormat');
@@ -93,7 +95,8 @@ class BuiltinHelper extends Helper {
     }
 
     /**
-     * Cache an asset for future lookups by ID.
+     * Alias for store (old name of store)
+     * @deprecated Use BuiltinHelper.store
      * @param {AssetType} assetType - The type of the asset to cache.
      * @param {DataFormat} dataFormat - The dataFormat of the data for the cached asset.
      * @param {Buffer} data - The data for the cached asset.
@@ -101,6 +104,19 @@ class BuiltinHelper extends Helper {
      * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
      */
     cache (assetType, dataFormat, data, id) {
+        log.warn('Deprecation: BuiltinHelper.cache has been replaced with BuiltinHelper.store.');
+        return this.store(assetType, dataFormat, data, id);
+    }
+
+    /**
+     * Cache an asset for future lookups by ID.
+     * @param {AssetType} assetType - The type of the asset to cache.
+     * @param {DataFormat} dataFormat - The dataFormat of the data for the cached asset.
+     * @param {Buffer} data - The data for the cached asset.
+     * @param {string} id - The id for the cached asset.
+     * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
+     */
+    store (assetType, dataFormat, data, id) {
         if (!dataFormat) throw new Error('Data cached without specifying its format');
         if (id !== null && typeof id !== 'undefined') {
             if (this.assets.hasOwnProperty(id) && assetType.immutable) return id;

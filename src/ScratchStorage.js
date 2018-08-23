@@ -1,3 +1,5 @@
+const log = require('./log');
+
 const BuiltinHelper = require('./BuiltinHelper');
 const WebHelper = require('./WebHelper');
 
@@ -74,16 +76,29 @@ class ScratchStorage {
      * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
      */
     cache (assetType, dataFormat, data, id) {
-        return this.builtinHelper.cache(assetType, dataFormat, data, id);
+        return this.builtinHelper.store(assetType, dataFormat, data, id);
     }
 
     /**
      * Register a web-based source for assets. Sources will be checked in order of registration.
      * @param {Array.<AssetType>} types - The types of asset provided by this source.
-     * @param {UrlFunction} urlFunction - A function which computes a URL from an Asset.
+     * @param {UrlFunction} getFunction - A function which computes a GET URL from an Asset.
+     * @param {UrlFunction} createFunction - A function which computes a POST URL for asset data.
+     * @param {UrlFunction} updateFunction - A function which computes a PUT URL for asset data.
+     */
+    addWebStore (types, getFunction, createFunction, updateFunction) {
+        this.webHelper.addStore(types, getFunction, createFunction, updateFunction);
+    }
+
+    /**
+     * Register a web-based source for assets. Sources will be checked in order of registration.
+     * @deprecated Please use addWebStore
+     * @param {Array.<AssetType>} types - The types of asset provided by this source.
+     * @param {UrlFunction} urlFunction - A function which computes a GET URL from an Asset.
      */
     addWebSource (types, urlFunction) {
-        this.webHelper.addSource(types, urlFunction);
+        log.warn('Deprecation: Storage.addWebSource has been replaced by addWebStore.');
+        this.addWebStore(types, urlFunction);
     }
 
     /**
