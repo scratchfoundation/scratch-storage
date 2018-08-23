@@ -106,6 +106,8 @@ class BuiltinHelper extends Helper {
             if (this.assets.hasOwnProperty(id) && assetType.immutable) return id;
         } else if (assetType.immutable) {
             id = md5(data);
+        } else {
+            throw new Error('Tried to cache data without an id');
         }
         this.assets[id] = {
             type: assetType,
