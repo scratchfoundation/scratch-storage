@@ -1,5 +1,4 @@
 const BuiltinHelper = require('./BuiltinHelper');
-const LocalHelper = require('./LocalHelper');
 const WebHelper = require('./WebHelper');
 
 const _Asset = require('./Asset');
@@ -12,8 +11,6 @@ class ScratchStorage {
 
         this.builtinHelper = new BuiltinHelper(this);
         this.webHelper = new WebHelper(this);
-        this.localHelper = new LocalHelper(this);
-
         this.builtinHelper.registerDefaultAssets(this);
     }
 
@@ -125,7 +122,7 @@ class ScratchStorage {
      */
     load (assetType, assetId, dataFormat) {
         /** @type {Helper[]} */
-        const helpers = [this.builtinHelper, this.localHelper, this.webHelper];
+        const helpers = [this.builtinHelper, this.webHelper];
         const errors = [];
         let helperIndex = 0;
         dataFormat = dataFormat || assetType.runtimeFormat;
