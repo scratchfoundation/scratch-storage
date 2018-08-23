@@ -187,10 +187,10 @@ class ScratchStorage {
     /**
      * Store an asset by type & ID.
      * @param {AssetType} assetType - The type of asset to fetch. This also determines which asset store to use.
-     * @param {DataFormat} [dataFormat] - Optional: load this format instead of the AssetType's default.
-     * @param {DataFormat} [data] - Optional: store this data, rather than the data in the asset
-     * @param {?string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
-     * @return {Promise.<id, title>} A promise for asset metadata
+     * @param {?DataFormat} [dataFormat] - Optional: load this format instead of the AssetType's default.
+     * @param {Buffer} data - Data to store for the asset
+     * @param {?string} [assetId] - The ID of the asset to fetch: a project ID, MD5, etc.
+     * @return {Promise.<object>} A promise for asset metadata
      */
     store (assetType, dataFormat, data, assetId) {
         dataFormat = dataFormat || assetType.runtimeFormat;

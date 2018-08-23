@@ -39,8 +39,8 @@ class WebHelper extends Helper {
     }
 
     /**
-     * Register a web-based source for assets. Sources will be checked in order of registration.
-     * @param {Array.<AssetType>} types - The types of asset provided by this source.
+     * Register a web-based store for assets. Sources will be checked in order of registration.
+     * @param {Array.<AssetType>} types - The types of asset provided by this store.
      * @param {UrlFunction} getFunction - A function which computes a GET URL for an Asset
      * @param {UrlFunction} createFunction - A function which computes a POST URL for an Asset
      * @param {UrlFunction} updateFunction - A function which computes a PUT URL for an Asset
@@ -130,9 +130,9 @@ class WebHelper extends Helper {
     store (assetType, dataFormat, data, assetId) {
         const asset = new Asset(assetType, assetId, dataFormat);
         // If we have an asset id, we should update, otherwise create to get an id
-        const create = assetId === null || typeof assetId === 'undefined';
+        const create = assetId !== '' || assetId === null || typeof assetId === 'undefined';
 
-        // Use the first source with the appropriate asset type and url function
+        // Use the first store with the appropriate asset type and url function
         const store = this.stores.filter(s =>
             // Only use stores for the incoming asset type
             s.types.indexOf(assetType.name) !== -1 && (
