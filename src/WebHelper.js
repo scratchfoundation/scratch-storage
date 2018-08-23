@@ -119,6 +119,56 @@ class WebHelper extends Helper {
             tryNextSource();
         });
     }
+
+    /**
+     * Create or update an asset with provided data. The create function is called if no asset id is provided
+     * @param {AssetType} assetType - The type of asset to create or update.
+     * @param {?DataFormat} dataFormat - DataFormat of the data for the stored asset.
+     * @param {Buffer} data - The data for the cached asset.
+     * @param {?string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
+     * @return {Promise.<object>} A promise for the response from the create or update request
+     */
+    store (assetType, dataFormat, data, assetId) {
+        const asset = new Asset(assetType, assetId, dataFormat);
+        // If we have an asset id, we should update, otherwise create to get an id
+        const create = assetId === null || typeof assetId === 'undefined';
+
+        // Use the first source with the appropriate asset type and url function
+        const store = this.stores.filter(s =>
+            // Only use stores for the incoming asset type
+            s.types.indexOf(assetType.name) !== -1 && (
+                // Only use stores that have a create function if this is a create request
+                // or an update function if this is an update request
+                (create && s.create) || s.update
+            )
+        )[0];
+
+        const method = create ? 'post' : 'put';
+
+        return new Promise((resolve, reject) => {
+            if (!store) return reject('No appropriate stores');
+
+            let reqConfig = create ? store.create(asset) : store.update(asset);
+            if (typeof reqConfig === 'string') {
+                reqConfig = {
+                    url: reqConfig
+                };
+            }
+            return nets({
+                body: data,
+                method: method,
+                ...reqConfig
+            }, (err, resp, body) => {
+                if (err || Math.floor(resp.statusCode / 100) !== 2) {
+                    return reject(err || resp.statusCode);
+                }
+                return resolve({
+                    id: body['content-name'],
+                    ...body
+                });
+            });
+        });
+    }
 }
 
 module.exports = WebHelper;
