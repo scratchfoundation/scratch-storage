@@ -102,7 +102,7 @@ class BuiltinHelper extends Helper {
      */
     cache (assetType, dataFormat, data, id) {
         if (!dataFormat) throw new Error('Data cached without specifying its format');
-        if (id) {
+        if (id !== null && typeof id !== 'undefined') {
             if (this.assets.hasOwnProperty(id) && assetType.immutable) return id;
         } else if (assetType.immutable) {
             id = md5(data);
