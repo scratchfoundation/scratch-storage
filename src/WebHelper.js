@@ -130,7 +130,7 @@ class WebHelper extends Helper {
     store (assetType, dataFormat, data, assetId) {
         const asset = new Asset(assetType, assetId, dataFormat);
         // If we have an asset id, we should update, otherwise create to get an id
-        const create = assetId !== '' || assetId === null || typeof assetId === 'undefined';
+        const create = assetId === '' || assetId === null || typeof assetId === 'undefined';
 
         // Use the first store with the appropriate asset type and url function
         const store = this.stores.filter(s =>
