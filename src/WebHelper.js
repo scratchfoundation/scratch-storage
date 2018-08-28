@@ -155,13 +155,14 @@ class WebHelper extends Helper {
             }
             return nets(Object.assign({
                 body: data,
-                method: method
+                method: method,
+                encoding: undefined // eslint-disable-line no-undefined
             }, reqConfig), (err, resp, body) => {
                 if (err || Math.floor(resp.statusCode / 100) !== 2) {
                     return reject(err || resp.statusCode);
                 }
                 return resolve(Object.assign({
-                    id: body['content-name']
+                    id: body['content-name'] || assetId
                 }, body));
             });
         });
