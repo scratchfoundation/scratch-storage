@@ -162,7 +162,7 @@ class WebHelper extends Helper {
                     return reject(err || resp.statusCode);
                 }
                 return resolve(Object.assign({
-                    id: body['content-name']
+                    id: body['content-name'] || assetId
                 }, body));
             });
         });
