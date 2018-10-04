@@ -161,9 +161,13 @@ class WebHelper extends Helper {
                 if (err || Math.floor(resp.statusCode / 100) !== 2) {
                     return reject(err || resp.statusCode);
                 }
-                return resolve(Object.assign({
-                    id: body['content-name'] || assetId
-                }, body));
+                const bodyObj = typeof body === 'string' ? JSON.parse(body) : body;
+                return resolve(bodyObj.id ?
+                    body :
+                    Object.assign(bodyObj, {
+                        id: bodyObj['content-name'] || assetId
+                    }
+                ));
             });
         });
     }
