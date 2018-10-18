@@ -68,7 +68,7 @@ class ScratchStorage {
     }
 
     /**
-     * Cache an asset for future lookups by ID.
+     * Deprecated API for caching built-in assets. Use createAsset.
      * @param {AssetType} assetType - The type of the asset to cache.
      * @param {DataFormat} dataFormat - The dataFormat of the data for the cached asset.
      * @param {Buffer} data - The data for the cached asset.
@@ -76,7 +76,22 @@ class ScratchStorage {
      * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
      */
     cache (assetType, dataFormat, data, id) {
-        return this.builtinHelper.store(assetType, dataFormat, data, id);
+        log.warn('Deprecation: Storage.cache is deprecated. Use Storage.createAsset, and store assets externally.');
+        return this.builtinHelper._store(assetType, dataFormat, data, id);
+    }
+
+    /**
+     * Construct an Asset, and optionally generate an md5 hash of its data to create an id
+     * @param {AssetType} assetType - The type of the asset to cache.
+     * @param {DataFormat} dataFormat - The dataFormat of the data for the cached asset.
+     * @param {Buffer} data - The data for the cached asset.
+     * @param {string} [id] - The id for the cached asset.
+     * @param {bool} [generateId] - flag to set id to an md5 hash of data if `id` isn't supplied
+     * @returns {Asset} generated Asset with `id` attribute set if not supplied
+     */
+    createAsset (assetType, dataFormat, data, id, generateId) {
+        if (!dataFormat) throw new Error('Tried to create asset without a dataFormat');
+        return new _Asset(assetType, id, dataFormat, data, generateId);
     }
 
     /**
@@ -154,7 +169,7 @@ class ScratchStorage {
                                 } else {
                                     // TODO? this.localHelper.cache(assetType, assetId, asset);
                                     if (helper !== this.builtinHelper && assetType.immutable) {
-                                        asset.assetId = this.builtinHelper.cache(
+                                        asset.assetId = this.builtinHelper._store(
                                             assetType,
                                             asset.dataFormat,
                                             asset.data,
@@ -198,7 +213,7 @@ class ScratchStorage {
             (resolve, reject) =>
                 this.webHelper.store(assetType, dataFormat, data, assetId)
                     .then(body => {
-                        this.builtinHelper.store(assetType, dataFormat, data, body.id);
+                        this.builtinHelper._store(assetType, dataFormat, data, body.id);
                         return resolve(body);
                     })
                     .catch(error => reject(error))
