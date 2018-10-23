@@ -14,6 +14,17 @@ class ScratchStorage {
         this.builtinHelper = new BuiltinHelper(this);
         this.webHelper = new WebHelper(this);
         this.builtinHelper.registerDefaultAssets(this);
+
+        this._helpers = [
+            {
+                helper: this.builtinHelper,
+                priority: 100
+            },
+            {
+                helper: this.webHelper,
+                priority: -100
+            }
+        ];
     }
 
     /**
@@ -56,6 +67,18 @@ class ScratchStorage {
      */
     static get AssetType () {
         return _AssetType;
+    }
+
+    /**
+     * Add a storage helper to this manager. Helpers with a higher priority number will be checked first when loading
+     * or storing assets. For comparison, the helper for built-in assets has `priority=100` and the default web helper
+     * has `priority=-100`. The relative order of helpers with equal priorities is undefined.
+     * @param {Helper} helper - the helper to be added.
+     * @param {number} [priority] - the priority for this new helper (default: 0).
+     */
+    addHelper (helper, priority = 0) {
+        this._helpers.push({helper, priority});
+        this._helpers.sort((a, b) => b.priority - a.priority);
     }
 
     /**
@@ -152,7 +175,7 @@ class ScratchStorage {
      */
     load (assetType, assetId, dataFormat) {
         /** @type {Helper[]} */
-        const helpers = [this.builtinHelper, this.webHelper];
+        const helpers = this._helpers.map(x => x.helper);
         const errors = [];
         let helperIndex = 0;
         dataFormat = dataFormat || assetType.runtimeFormat;
