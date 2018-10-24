@@ -5,6 +5,25 @@ const log = require('./log');
 const Asset = require('./Asset');
 const Helper = require('./Helper');
 
+// takes a url and adds query string params, maintaining existing ones.
+// note that it url encodes incoming param values.
+const addUrlParams = (url, paramsToAdd) => {
+    if (!paramsToAdd || !Object.keys(paramsToAdd).length) {
+        return url;
+    }
+    const parts = url.split(/[?#]/);
+    const searchParams = (new URL(url)).searchParams;
+    for (const key in paramsToAdd) {
+        searchParams.set(key, paramsToAdd[key]);
+    }
+    const queryString = searchParams.toString();
+    let resultUrl = parts[0];
+    if (queryString && queryString.length) {
+        resultUrl += `?${queryString}`;
+    }
+    return resultUrl;
+};
+
 /**
  * @typedef {function} UrlFunction - A function which computes a URL from asset information.
  * @param {Asset} - The asset for which the URL should be computed.
@@ -127,7 +146,7 @@ class WebHelper extends Helper {
      * @param {?string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
      * @return {Promise.<object>} A promise for the response from the create or update request
      */
-    store (assetType, dataFormat, data, assetId) {
+    store (assetType, dataFormat, data, assetId, urlParams) {
         const asset = new Asset(assetType, assetId, dataFormat);
         // If we have an asset id, we should update, otherwise create to get an id
         const create = assetId === '' || assetId === null || typeof assetId === 'undefined';
@@ -153,6 +172,7 @@ class WebHelper extends Helper {
                     url: reqConfig
                 };
             }
+            reqConfig.url = addUrlParams(reqConfig.url, urlParams);
             return nets(Object.assign({
                 body: data,
                 method: method,
