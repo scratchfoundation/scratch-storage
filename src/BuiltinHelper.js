@@ -63,7 +63,7 @@ class BuiltinHelper extends Helper {
         this.assets = {};
 
         BuiltinAssets.forEach(assetRecord => {
-            assetRecord.id = this.store(assetRecord.type, assetRecord.format, assetRecord.data, assetRecord.id);
+            assetRecord.id = this._store(assetRecord.type, assetRecord.format, assetRecord.data, assetRecord.id);
         });
     }
 
@@ -109,7 +109,8 @@ class BuiltinHelper extends Helper {
     }
 
     /**
-     * Cache an asset for future lookups by ID.
+     * Deprecated external API for _store
+     * @deprecated Not for external use. Create assets and keep track of them outside of the storage instance.
      * @param {AssetType} assetType - The type of the asset to cache.
      * @param {DataFormat} dataFormat - The dataFormat of the data for the cached asset.
      * @param {Buffer} data - The data for the cached asset.
@@ -117,6 +118,19 @@ class BuiltinHelper extends Helper {
      * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
      */
     store (assetType, dataFormat, data, id) {
+        log.warn('Deprecation: use Storage.createAsset. BuiltinHelper is for internal use only.');
+        return this._store(assetType, dataFormat, data, id);
+    }
+
+    /**
+     * Cache an asset for future lookups by ID.
+     * @param {AssetType} assetType - The type of the asset to cache.
+     * @param {DataFormat} dataFormat - The dataFormat of the data for the cached asset.
+     * @param {Buffer} data - The data for the cached asset.
+     * @param {(string|number)} id - The id for the cached asset.
+     * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
+     */
+    _store (assetType, dataFormat, data, id) {
         if (!dataFormat) throw new Error('Data cached without specifying its format');
         if (id !== '' && id !== null && typeof id !== 'undefined') {
             if (this.assets.hasOwnProperty(id) && assetType.immutable) return id;
