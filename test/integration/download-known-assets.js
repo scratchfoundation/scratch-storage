@@ -3,7 +3,7 @@ const test = require('tap').test;
 
 const ScratchStorage = require('../../dist/node/scratch-storage');
 
-var storage;
+let storage;
 test('constructor', t => {
     storage = new ScratchStorage();
     t.type(storage, ScratchStorage);
@@ -96,10 +96,10 @@ test('load', t => {
             t.strictEqual(md5(asset.data), assetInfo.md5);
         }
     };
-    for (var i = 0; i < testAssets.length; ++i) {
+    for (let i = 0; i < testAssets.length; ++i) {
         const assetInfo = testAssets[i];
 
-        var promise = storage.load(assetInfo.type, assetInfo.id, assetInfo.ext);
+        let promise = storage.load(assetInfo.type, assetInfo.id, assetInfo.ext);
         t.type(promise, 'Promise');
 
         promise = promise.then(asset => checkAsset(assetInfo, asset));
