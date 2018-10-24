@@ -3,7 +3,7 @@ const test = require('tap').test;
 
 const ScratchStorage = require('../../dist/node/scratch-storage');
 
-var storage;
+let storage;
 test('constructor', t => {
     storage = new ScratchStorage();
     t.type(storage, ScratchStorage);
@@ -14,7 +14,7 @@ const defaultAssetTypes = [storage.AssetType.ImageBitmap, storage.AssetType.Imag
 const defaultIds = {};
 
 test('getDefaultAssetId', t => {
-    for (var i = 0; i < defaultAssetTypes.length; ++i) {
+    for (let i = 0; i < defaultAssetTypes.length; ++i) {
         const assetType = defaultAssetTypes[i];
         const id = storage.getDefaultAssetId(assetType);
         t.type(id, 'string');
@@ -32,7 +32,7 @@ test('load', t => {
         t.ok(asset.data.length);
         t.strictEqual(md5(asset.data), id);
     };
-    for (var i = 0; i < defaultAssetTypes.length; ++i) {
+    for (let i = 0; i < defaultAssetTypes.length; ++i) {
         const assetType = defaultAssetTypes[i];
         const id = defaultIds[assetType.name];
 
