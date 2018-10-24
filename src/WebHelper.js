@@ -144,6 +144,7 @@ class WebHelper extends Helper {
      * @param {?DataFormat} dataFormat - DataFormat of the data for the stored asset.
      * @param {Buffer} data - The data for the cached asset.
      * @param {?string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
+     * @param {?object} urlParams - object of params to add to querystring
      * @return {Promise.<object>} A promise for the response from the create or update request
      */
     store (assetType, dataFormat, data, assetId, urlParams) {

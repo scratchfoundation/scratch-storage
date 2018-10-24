@@ -190,13 +190,14 @@ class ScratchStorage {
      * @param {?DataFormat} [dataFormat] - Optional: load this format instead of the AssetType's default.
      * @param {Buffer} data - Data to store for the asset
      * @param {?string} [assetId] - The ID of the asset to fetch: a project ID, MD5, etc.
+     * @param {?object} urlParams - object of params to add to querystring
      * @return {Promise.<object>} A promise for asset metadata
      */
-    store (assetType, dataFormat, data, assetId) {
+    store (assetType, dataFormat, data, assetId, urlParams) {
         dataFormat = dataFormat || assetType.runtimeFormat;
         return new Promise(
             (resolve, reject) =>
-                this.webHelper.store(assetType, dataFormat, data, assetId)
+                this.webHelper.store(assetType, dataFormat, data, assetId, urlParams)
                     .then(body => {
                         this.builtinHelper.store(assetType, dataFormat, data, body.id);
                         return resolve(body);
