@@ -47,7 +47,7 @@
     "file-loader": "2.0.0",
     "husky": "1.2.0",
     "json": "^9.0.4",
-    "semantic-release": "^15.10.5",
+    "semantic-release": "^15.13.3",
     "tap": "12.1.1",
     "travis-after-all": "^1.4.4",
     "uglifyjs-webpack-plugin": "^2.0.1",
