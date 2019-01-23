@@ -1,5 +1,3 @@
-const nets = require('nets');
-
 const log = require('./log');
 
 const Asset = require('./Asset');
@@ -133,39 +131,29 @@ class WebHelper extends Helper {
 
         const method = create ? 'post' : 'put';
 
-        return new Promise((resolve, reject) => {
-            if (!store) return reject('No appropriate stores');
+        if (!store) return Promise.reject('No appropriate stores');
 
-            let reqConfig = create ? store.create(asset) : store.update(asset);
-            if (typeof reqConfig === 'string') {
-                reqConfig = {
-                    url: reqConfig
-                };
-            }
-            return nets(Object.assign({
-                body: data,
-                method: method,
-                encoding: undefined // eslint-disable-line no-undefined
-            }, reqConfig), (err, resp, body) => {
-                if (err || Math.floor(resp.statusCode / 100) !== 2) {
-                    return reject(err || resp.statusCode);
-                }
-                // xhr makes it difficult to both send FormData and automatically
-                // parse a JSON response. So try to parse everything as JSON.
+        const reqConfig = ensureRequestConfig(
+            create ? store.create(asset) : store.update(asset)
+        );
+        return this.tool.send(reqConfig, data, method)
+            .then(body => {
+                // xhr makes it difficult to both send FormData and
+                // automatically parse a JSON response. So try to parse
+                // everything as JSON.
                 if (typeof body === 'string') {
                     try {
                         body = JSON.parse(body);
                     } catch (parseError) {
                         // If it's not parseable, then we can't add the id even
                         // if we want to, so stop here
-                        return resolve(body);
+                        return body;
                     }
                 }
-                return resolve(Object.assign({
+                return Object.assign({
                     id: body['content-name'] || assetId
-                }, body));
+                }, body);
             });
-        });
     }
 }
 
