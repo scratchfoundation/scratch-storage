@@ -7,7 +7,11 @@ const NetsTool = require('./NetsTool');
  */
 class ProxyTool {
     constructor () {
-        this.tools = [new FetchWorkerTool(), new FetchTool(), new NetsTool()];
+        this.tools = [
+            new FetchWorkerTool(),
+            new FetchTool(),
+            new NetsTool()
+        ];
     }
 
     /**
@@ -34,7 +38,15 @@ class ProxyTool {
             if (!tool) {
                 throw err;
             }
-            return tool.get(reqConfig, options).catch(nextTool);
+            try {
+                const getPromise = tool.get(reqConfig, options);
+                if (getPromise === null) {
+                    return nextTool();
+                }
+                return getPromise.catch(nextTool);
+            } catch (_err) {
+                return nextTool(_err);
+            }
         };
         return nextTool();
     }
