@@ -29,6 +29,15 @@ class PrivateFetchWorkerTool {
          */
         this.jobs = {};
 
+        Promise.resolve()
+            .then(() => {
+                if (this.worker === null && this._supportError === null) {
+                    this.initWorker();
+                }
+            });
+    }
+
+    initWorker () {
         try {
             if (this.getSupported) {
                 // eslint-disable-next-line global-require
@@ -94,6 +103,10 @@ class PrivateFetchWorkerTool {
             // Return null to indicate to ProxyTool that FetchWorkerTool will
             // not get this requested url.
             return null;
+        }
+
+        if (this.worker === null && this._supportError === null) {
+            this.initWorker();
         }
 
         return new Promise((resolve, reject) => {
