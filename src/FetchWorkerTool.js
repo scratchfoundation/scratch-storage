@@ -93,7 +93,7 @@ class PrivateFetchWorkerTool {
         // TODO: This is rather knowledgeable of what data urls look like. Can
         // it be abstracted or less knowledgable while letting FetchTool do the
         // job with data?
-        if (/\/\w+\/get\/$|\.json/.test(url)) {
+        if (/\/\w+\/get\/$|\.json|\/\d+$/.test(url)) {
             // Load extension-less files with another tool. The worker needs
             // time to load and start up. Loading json or other data through a
             // main process tool (fetch or nets) will return a faster result
