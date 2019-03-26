@@ -15,7 +15,19 @@ let intervalId = null;
 const registerStep = function () {
     intervalId = setInterval(() => {
         if (complete.length) {
-            postMessage(complete.slice(), complete.map(response => response.buffer).filter(Boolean));
+            // Send our chunk of completed requests and instruct postMessage to
+            // transfer the buffers instead of copying them.
+            postMessage(
+                complete.slice(),
+                // Instruct postMessage that these buffers in the sent message
+                // should use their Transferable trait. After the postMessage
+                // call the "buffers" will still be in complete if you looked,
+                // but they will all be length 0 as the data they reference has
+                // been sent to the window. This lets us send a lot of data
+                // without the normal postMessage behaviour of making a copy of
+                // all of the data for the window.
+                complete.map(response => response.buffer).filter(Boolean)
+            );
             complete.length = 0;
         }
         if (jobsActive === 0) {
