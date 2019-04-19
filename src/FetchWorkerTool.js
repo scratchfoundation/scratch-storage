@@ -80,7 +80,7 @@ class PrivateFetchWorkerTool {
      * @param {{method:string}} options - Additional options to configure fetch.
      * @returns {Promise.<Buffer>} Resolve to Buffer of data from server.
      */
-    get ({url}, options = {method: 'GET'}) {
+    get ({url, ...options}) {
         return new Promise((resolve, reject) => {
             // TODO: Use a Scratch standard ID generator ...
             const id = Math.random().toString(16)
@@ -88,7 +88,7 @@ class PrivateFetchWorkerTool {
             this.worker.postMessage({
                 id,
                 url,
-                options
+                options: Object.assign({method: 'GET'}, options)
             });
             this.jobs[id] = {
                 id,
@@ -152,11 +152,10 @@ class PublicFetchWorkerTool {
     /**
      * Request data from a server with a worker that uses fetch.
      * @param {{url:string}} reqConfig - Request configuration for data to get.
-     * @param {{method:string}} options - Additional options to configure fetch.
      * @returns {Promise.<Buffer>} Resolve to Buffer of data from server.
      */
-    get (reqConfig, options) {
-        return this.inner.get(reqConfig, options);
+    get (reqConfig) {
+        return this.inner.get(reqConfig);
     }
 
     /**

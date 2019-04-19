@@ -3,6 +3,14 @@ const FetchTool = require('./FetchTool');
 const NetsTool = require('./NetsTool');
 
 /**
+ * @typedef {object} Request
+ * @property {string} url
+ * @property {*} body
+ * @property {string} method
+ * @property {boolean} withCredentials
+ */
+
+/**
  * Get and send assets with other tools in sequence.
  */
 class ProxyTool {
@@ -31,11 +39,10 @@ class ProxyTool {
 
     /**
      * Request data from with one of the proxied tools.
-     * @param {{url:string}} reqConfig - Request configuration for data to get.
-     * @param {{method:string}} options - Additional options to configure fetch.
+     * @param {Request} reqConfig - Request configuration for data to get.
      * @returns {Promise.<Buffer>} Resolve to Buffer of data from server.
      */
-    get (reqConfig, options) {
+    get (reqConfig) {
         let toolIndex = 0;
         const nextTool = err => {
             const tool = this.tools[toolIndex++];
@@ -45,7 +52,7 @@ class ProxyTool {
             if (!tool.isGetSupported) {
                 return nextTool(err);
             }
-            return tool.get(reqConfig, options).catch(nextTool);
+            return tool.get(reqConfig).catch(nextTool);
         };
         return nextTool();
     }
@@ -60,12 +67,10 @@ class ProxyTool {
 
     /**
      * Send data to a server with one of the proxied tools.
-     * @param {{url:string}} reqConfig - Request configuration for data to send.
-     * @param {*} data - Data to send.
-     * @param {string} method - HTTP method to sending the data as.
+     * @param {Request} reqConfig - Request configuration for data to send.
      * @returns {Promise.<Buffer|string|object>} Server returned metadata.
      */
-    send (reqConfig, data, method) {
+    send (reqConfig) {
         let toolIndex = 0;
         const nextTool = err => {
             const tool = this.tools[toolIndex++];
@@ -75,7 +80,7 @@ class ProxyTool {
             if (!tool.isSendSupported) {
                 return nextTool(err);
             }
-            return tool.send(reqConfig, data, method).catch(nextTool);
+            return tool.send(reqConfig).catch(nextTool);
         };
         return nextTool();
     }
