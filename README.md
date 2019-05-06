@@ -62,14 +62,14 @@ var getAssetUrl = function (asset) {
 
 Then, let the storage module know about your source:
 ```js
-storage.addWebSource(
+storage.addWebStore(
     [AssetType.ImageVector, AssetType.ImageBitmap, AssetType.Sound],
     getAssetUrl);
 ```
 
 If you're using ES6 you may be able to simplify all of the above quite a bit:
 ```js
-storage.addWebSource(
+storage.addWebStore(
     [AssetType.ImageVector, AssetType.ImageBitmap, AssetType.Sound],
     asset => `https://assets.example.com/path/to/assets/${asset.assetId}.${asset.dataFormat}/get/`);
 ```
