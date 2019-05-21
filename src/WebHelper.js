@@ -159,7 +159,8 @@ class WebHelper extends Helper {
         const reqConfig = ensureRequestConfig(
             create ? store.create(asset) : store.update(asset)
         );
-        return tool.send(reqConfig, data, method)
+        const reqBodyConfig = Object.assign({body: data, method}, reqConfig);
+        return tool.send(reqBodyConfig)
             .then(body => {
                 // xhr makes it difficult to both send FormData and
                 // automatically parse a JSON response. So try to parse
