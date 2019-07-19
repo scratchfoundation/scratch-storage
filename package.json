@@ -41,7 +41,7 @@
     "@commitlint/travis-cli": "7.2.1",
     "babel-eslint": "10.0.2",
     "babel-loader": "^8.0.4",
-    "cz-conventional-changelog": "^2.0.0",
+    "cz-conventional-changelog": "^3.0.0",
     "eslint": "5.7.0",
     "eslint-config-scratch": "5.1.0",
     "eslint-plugin-react": "7.12.4",
