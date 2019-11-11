@@ -1,6 +1,5 @@
 const FetchWorkerTool = require('./FetchWorkerTool');
 const FetchTool = require('./FetchTool');
-const NetsTool = require('./NetsTool');
 
 /**
  * @typedef {object} Request
@@ -17,9 +16,9 @@ class ProxyTool {
     constructor (filter = ProxyTool.TOOL_FILTER.ALL) {
         let tools;
         if (filter === ProxyTool.TOOL_FILTER.READY) {
-            tools = [new FetchTool(), new NetsTool()];
+            tools = [new FetchTool()];
         } else {
-            tools = [new FetchWorkerTool(), new FetchTool(), new NetsTool()];
+            tools = [new FetchWorkerTool(), new FetchTool()];
         }
 
         /**
