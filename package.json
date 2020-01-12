@@ -33,7 +33,7 @@
     "worker-loader": "^2.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.3",
+    "@babel/core": "^7.8.0",
     "@babel/polyfill": "7.4.3",
     "@babel/preset-env": "^7.4.3",
     "@commitlint/cli": "8.2.0",
