@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",
-    "@babel/polyfill": "7.4.3",
+    "@babel/polyfill": "7.8.7",
     "@babel/preset-env": "^7.4.3",
     "@commitlint/cli": "8.2.0",
     "@commitlint/config-conventional": "8.2.0",
