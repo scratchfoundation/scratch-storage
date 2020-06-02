@@ -108,7 +108,7 @@ class PrivateFetchWorkerTool {
     }
 
     /**
-     * Send data to a server with nets.
+     * Send data to a server.
      * @throws {Error} A not implemented error.
      */
     send () {

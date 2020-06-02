@@ -17,7 +17,7 @@ const ensureRequestConfig = reqConfig => {
  * @typedef {function} UrlFunction - A function which computes a URL from asset information.
  * @param {Asset} - The asset for which the URL should be computed.
  * @returns {(string|object)} - A string representing the URL for the asset request OR an object with configuration for
- *                              the underlying `nets` call (necessary for configuring e.g. authentication)
+ *                              the underlying fetch call (necessary for configuring e.g. authentication)
  */
 
 class WebHelper extends Helper {

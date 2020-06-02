@@ -1,5 +1,7 @@
 const md5 = require('js-md5');
 const test = require('tap').test;
+// Polyfill the fetch API
+global.fetch = require('node-fetch');
 
 const ScratchStorage = require('../../dist/node/scratch-storage');
 
