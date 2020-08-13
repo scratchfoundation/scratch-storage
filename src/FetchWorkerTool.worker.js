@@ -49,7 +49,12 @@ const onMessage = ({data: job}) => {
     jobsActive++;
 
     fetch(job.url, job.options)
-        .then(response => response.arrayBuffer())
+        .then(response => {
+            if (response.ok) {
+                return response.arrayBuffer();
+            }
+            throw response;
+        })
         .then(buffer => complete.push({id: job.id, buffer}))
         .catch(error => complete.push({id: job.id, error}))
         .then(() => jobsActive--);
