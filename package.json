@@ -49,7 +49,7 @@
     "json": "^9.0.4",
     "node-fetch": "^2.6.0",
     "semantic-release": "^15.10.5",
-    "tap": "12.1.1",
+    "tap": "15.0.1",
     "travis-after-all": "^1.4.4",
     "uglifyjs-webpack-plugin": "^2.0.1",
     "webpack": "^4.8.0",
