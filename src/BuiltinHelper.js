@@ -1,5 +1,5 @@
 const md5 = require('js-md5');
-
+const Buffer = require('buffer').Buffer;
 const log = require('./log');
 
 const Asset = require('./Asset');
