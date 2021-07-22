@@ -32,14 +32,14 @@
     "worker-loader": "^2.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.3",
-    "@babel/polyfill": "7.4.3",
-    "@babel/preset-env": "^7.4.3",
+    "@babel/core": "7.14.8",
+    "@babel/polyfill": "7.12.1",
+    "@babel/preset-env": "7.14.8",
     "@commitlint/cli": "8.2.0",
     "@commitlint/config-conventional": "8.2.0",
     "@commitlint/travis-cli": "8.2.0",
     "babel-eslint": "10.1.0",
-    "babel-loader": "^8.0.4",
+    "babel-loader": "8.0.6",
     "cz-conventional-changelog": "^3.0.2",
     "eslint": "^7.13.0",
     "eslint-config-scratch": "^6.0.0",
