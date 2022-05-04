@@ -1,7 +1,5 @@
 const md5 = require('js-md5');
 const test = require('tap').test;
-// Polyfill the fetch API
-global.fetch = require('node-fetch');
 
 const ScratchStorage = require('../../dist/node/scratch-storage');
 
@@ -18,6 +16,7 @@ test('constructor', t => {
  * @typedef {object} AssetTestInfo
  * @property {AssetType} type - The type of the asset.
  * @property {string} id - The asset's unique ID.
+ * @property {string} md5 - The asset's MD5 hash.
  * @property {DataFormat} [ext] - Optional: the asset's data format / file extension.
  */
 const testAssets = [
