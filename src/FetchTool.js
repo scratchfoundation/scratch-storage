@@ -21,7 +21,7 @@ class FetchTool {
     get ({url, ...options}) {
         return fetch(url, Object.assign({method: 'GET'}, options))
             .then(result => {
-                if (result.ok) return new Uint8Array(result.arrayBuffer());
+                if (result.ok) return result.arrayBuffer().then(b => new Uint8Array(b));
                 if (result.status === 404) return null;
                 return Promise.reject(result.status);
             });

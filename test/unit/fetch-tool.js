@@ -38,7 +38,7 @@ test('get success returns Uint8Array.body(response.arrayBuffer())', t => {
 
     global.fetch = () => Promise.resolve({
         ok: true,
-        arrayBuffer: () => encoded.buffer
+        arrayBuffer: () => Promise.resolve(encoded.buffer)
     });
 
     const tool = new FetchTool();
