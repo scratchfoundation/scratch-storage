@@ -12,9 +12,11 @@ test('send success returns response.text()', t => {
 
     const tool = new FetchTool();
     
-    return tool.send('url').then(result => {
-        t.equal(result, 'successful response');
-    });
+    return t.resolves(
+        tool.send('url').then(result => {
+            t.equal(result, 'successful response');
+        })
+    );
 });
 
 test('send failure returns response.status', t => {
@@ -25,9 +27,7 @@ test('send failure returns response.status', t => {
 
     const tool = new FetchTool();
 
-    return tool.send('url').catch(reason => {
-        t.equal(reason, 500);
-    });
+    return t.rejects(tool.send('url'), 500);
 });
 
 test('get success returns Uint8Array.body(response.arrayBuffer())', t => {
@@ -43,9 +43,11 @@ test('get success returns Uint8Array.body(response.arrayBuffer())', t => {
 
     const tool = new FetchTool();
     
-    return tool.get({url: 'url'}).then(result => {
-        t.equal(decoder.decode(result), text);
-    });
+    return t.resolves(
+        tool.get({url: 'url'}).then(result => {
+            t.equal(decoder.decode(result), text);
+        })
+    );
 });
 
 test('get with 404 response returns null data', t => {
@@ -56,9 +58,11 @@ test('get with 404 response returns null data', t => {
 
     const tool = new FetchTool();
 
-    return tool.get('url').then(result => {
-        t.equal(result, null);
-    });
+    return t.resolves(
+        tool.get('url').then(result => {
+            t.equal(result, null);
+        })
+    );
 });
 
 test('get failure returns response.status', t => {
@@ -69,7 +73,5 @@ test('get failure returns response.status', t => {
 
     const tool = new FetchTool();
 
-    return tool.get({url: 'url'}).catch(reason => {
-        t.equal(reason, 500);
-    });
+    return t.rejects(tool.get({url: 'url'}), 500);
 });
