@@ -96,7 +96,8 @@ class PrivateFetchWorkerTool {
                 reject
             };
         })
-            .then(body => new Uint8Array(body));
+            /* eslint no-confusing-arrow: ["error", {"allowParens": true}] */
+            .then(body => (body ? new Uint8Array(body) : null));
     }
 
     /**
