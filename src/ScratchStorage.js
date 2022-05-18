@@ -168,7 +168,7 @@ class ScratchStorage {
      * @param {string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
      * @param {DataFormat} [dataFormat] - Optional: load this format instead of the AssetType's default.
      * @return {Promise.<Asset>} A promise for the requested Asset.
-     *   If the promise is resolved with non-null, the value is the requested asset or a fallback.
+     *   If the promise is resolved with non-null, the value is the requested asset.
      *   If the promise is resolved with null, the desired asset could not be found with the current asset sources.
      *   If the promise is rejected, there was an error on at least one asset source. HTTP 404 does not count as an
      *   error here, but (for example) HTTP 403 does.
@@ -182,7 +182,7 @@ class ScratchStorage {
         let helperIndex = 0;
         let helper;
         const tryNextHelper = err => {
-            if (err) {
+            if (err) { // Track the error, but continue looking
                 errors.push(err);
             }
 
@@ -198,8 +198,8 @@ class ScratchStorage {
                     // TODO: maybe some types of error should prevent trying the next helper?
                     .catch(tryNextHelper);
             } else if (errors.length > 0) {
-                // At least one thing went wrong and also we couldn't find the
-                // asset.
+                // We looked through all the helpers and couldn't find the asset, AND
+                // at least one thing went wrong while we were looking.
                 return Promise.reject(errors);
             }
 
