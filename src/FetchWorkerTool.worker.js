@@ -51,6 +51,7 @@ const onMessage = ({data: job}) => {
     fetch(job.url, job.options)
         .then(result => {
             if (result.ok) return result.arrayBuffer();
+            if (result.status === 404) return null;
             return Promise.reject(result.status);
         })
         .then(buffer => complete.push({id: job.id, buffer}))
