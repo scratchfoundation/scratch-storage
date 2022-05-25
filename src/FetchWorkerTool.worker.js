@@ -55,7 +55,7 @@ const onMessage = ({data: job}) => {
             return Promise.reject(result.status);
         })
         .then(buffer => complete.push({id: job.id, buffer}))
-        .catch(error => complete.push({id: job.id, error}))
+        .catch(error => complete.push({id: job.id, error: error.message || `Failed request: ${job.url}`}))
         .then(() => jobsActive--);
 };
 
@@ -65,6 +65,6 @@ if (self.fetch) {
 } else {
     postMessage({support: {fetch: false}});
     self.addEventListener('message', ({data: job}) => {
-        postMessage([{id: job.id, error: new Error('fetch is unavailable')}]);
+        postMessage([{id: job.id, error: 'fetch is unavailable'}]);
     });
 }
