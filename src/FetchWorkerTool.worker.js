@@ -55,7 +55,7 @@ const onMessage = ({data: job}) => {
             return Promise.reject(result.status);
         })
         .then(buffer => complete.push({id: job.id, buffer}))
-        .catch(error => complete.push({id: job.id, error: error.message || `Failed request: ${job.url}`}))
+        .catch(error => complete.push({id: job.id, error: (error && error.message) || `Failed request: ${job.url}`}))
         .then(() => jobsActive--);
 };
 
