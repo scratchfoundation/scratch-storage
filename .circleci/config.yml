@@ -6,7 +6,7 @@ orbs:
 executors:
   default-executor:
     docker:
-      - image: "cimg/node:10.22.0"
+      - image: "cimg/node:10.24.1"
     working_directory: ~/project
     resource_class: medium
 
