@@ -2,7 +2,7 @@
 version: 2.1
 orbs:
   commitlint: conventional-changelog/commitlint@1.0.0
-  
+
 executors:
   default-executor:
     docker:
@@ -37,8 +37,9 @@ commands:
       - run:
           name: Test
           command: |
-            npm run build
-            npm run test
+            - npm run lint
+            - npm run build
+            - npm run tap
   deploy:
     steps:
       - run:
