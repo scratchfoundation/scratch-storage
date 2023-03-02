@@ -66,9 +66,9 @@ const testAssets = [
     }
 ];
 
-test('addWebSource', t => {
+test('addWebStore', t => {
     t.doesNotThrow(() => {
-        storage.addWebSource(
+        storage.addWebStore(
             [storage.AssetType.Project],
             asset => {
                 const idParts = asset.assetId.split('.');
@@ -78,7 +78,7 @@ test('addWebSource', t => {
             });
     });
     t.doesNotThrow(() => {
-        storage.addWebSource(
+        storage.addWebStore(
             [storage.AssetType.ImageVector, storage.AssetType.ImageBitmap, storage.AssetType.Sound],
             asset => `https://cdn.assets.scratch.mit.edu/internalapi/asset/${asset.assetId}.${asset.dataFormat}/get/`
         );
@@ -95,15 +95,15 @@ test('load', t => {
                 throw new Error(`failed to load ${assetInfo.type.name} asset with id=${assetInfo.id} (e=${e})`);
             });
         t.type(asset, storage.Asset);
-        t.strictEqual(asset.assetId, assetInfo.id);
-        t.strictEqual(asset.assetType, assetInfo.type);
+        t.equal(asset.assetId, assetInfo.id);
+        t.equal(asset.assetType, assetInfo.type);
         t.ok(asset.data.length);
 
         // Web assets should come back as clean
-        t.true(asset.clean);
+        t.ok(asset.clean);
 
         if (assetInfo.md5) {
-            t.strictEqual(md5(asset.data), assetInfo.md5);
+            t.equal(md5(asset.data), assetInfo.md5);
         }
     });
 
