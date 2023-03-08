@@ -5,10 +5,12 @@ const {mockFetch, successText} = require('../mocks/mockFetch.js');
 
 /**
  * This is the real FetchTool, but the 'cross-fetch' module has been replaced with the mockFetch function.
+ * @type {typeof import('../../src/FetchTool')}
  */
-const FetchTool = tap.mock('../../src/FetchTool.js', {
+const FetchTool = tap.mock('../../src/FetchTool', {
     'cross-fetch': {
-        default: mockFetch
+        default: mockFetch,
+        fetch: mockFetch
     }
 });
 
