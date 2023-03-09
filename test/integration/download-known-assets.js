@@ -20,16 +20,17 @@ test('constructor', t => {
  * @property {DataFormat} [ext] - Optional: the asset's data format / file extension.
  */
 const testAssets = [
-    {
-        type: storage.AssetType.Project,
-        id: '117504922',
-        md5: null // don't check MD5 for project without revision ID
-    },
-    {
-        type: storage.AssetType.Project,
-        id: '117504922.d6ae1ffb76f2bc83421cd3f40fc4fd57',
-        md5: '1225460702e149727de28bff4cfd9e23'
-    },
+    // TODO: mock project download, since we can no longer download projects directly
+    // {
+    //     type: storage.AssetType.Project,
+    //     id: '117504922',
+    //     md5: null // don't check MD5 for project without revision ID
+    // },
+    // {
+    //     type: storage.AssetType.Project,
+    //     id: '117504922.d6ae1ffb76f2bc83421cd3f40fc4fd57',
+    //     md5: '1225460702e149727de28bff4cfd9e23'
+    // },
     {
         type: storage.AssetType.ImageVector,
         id: 'f88bf1935daea28f8ca098462a31dbb0', // cat1-a
@@ -65,9 +66,9 @@ const testAssets = [
     }
 ];
 
-test('addWebSource', t => {
+test('addWebStore', t => {
     t.doesNotThrow(() => {
-        storage.addWebSource(
+        storage.addWebStore(
             [storage.AssetType.Project],
             asset => {
                 const idParts = asset.assetId.split('.');
@@ -77,7 +78,7 @@ test('addWebSource', t => {
             });
     });
     t.doesNotThrow(() => {
-        storage.addWebSource(
+        storage.addWebStore(
             [storage.AssetType.ImageVector, storage.AssetType.ImageBitmap, storage.AssetType.Sound],
             asset => `https://cdn.assets.scratch.mit.edu/internalapi/asset/${asset.assetId}.${asset.dataFormat}/get/`
         );
@@ -86,29 +87,25 @@ test('addWebSource', t => {
 });
 
 test('load', t => {
-    const promises = [];
-    const checkAsset = (assetInfo, asset) => {
+    const assetChecks = testAssets.map(async assetInfo => {
+        const asset = await storage.load(assetInfo.type, assetInfo.id, assetInfo.ext)
+            .catch(e => {
+                // tap's output isn't great if we just let it catch the unhandled promise rejection
+                // wrapping it like this makes a failure much easier to read in the test output
+                throw new Error(`failed to load ${assetInfo.type.name} asset with id=${assetInfo.id} (e=${e})`);
+            });
         t.type(asset, storage.Asset);
-        t.strictEqual(asset.assetId, assetInfo.id);
-        t.strictEqual(asset.assetType, assetInfo.type);
+        t.equal(asset.assetId, assetInfo.id);
+        t.equal(asset.assetType, assetInfo.type);
         t.ok(asset.data.length);
 
         // Web assets should come back as clean
-        t.true(asset.clean);
+        t.ok(asset.clean);
 
         if (assetInfo.md5) {
-            t.strictEqual(md5(asset.data), assetInfo.md5);
+            t.equal(md5(asset.data), assetInfo.md5);
         }
-    };
-    for (let i = 0; i < testAssets.length; ++i) {
-        const assetInfo = testAssets[i];
+    });
 
-        let promise = storage.load(assetInfo.type, assetInfo.id, assetInfo.ext);
-        t.type(promise, 'Promise');
-
-        promise = promise.then(asset => checkAsset(assetInfo, asset));
-        promises.push(promise);
-    }
-
-    return Promise.all(promises);
+    return Promise.all(assetChecks);
 });
