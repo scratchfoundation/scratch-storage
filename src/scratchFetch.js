@@ -19,17 +19,17 @@ const RequestMetadata = {
 const metadata = new Map();
 
 /**
- * Make a network request.
- * This will be a wrapper for the global fetch method, adding some Scratch-specific functionality.
- * @param {RequestInfo|URL} resource The resource to fetch.
- * @param {RequestInit} [options] Optional object containing custom settings for this request.
- * @see {@link https://developer.mozilla.org/docs/Web/API/fetch} for more about the fetch API.
- * @returns {Promise<Response>} A promise for the response to the request.
+ * Non-destructively merge any metadata state (if any) with the provided options object (if any).
+ * If there is metadata state but no options object is provided, make a new object.
+ * If there is no metadata state, return the provided options parameter without modification.
+ * If there is metadata and an options object is provided, modify a copy and return it.
+ * Headers in the provided options object may override headers generated from metadata state.
+ * @param {RequestInit} [options] The initial request options. May be null or undefined.
+ * @returns {RequestInit|undefined} the provided options parameter without modification, or a new options object.
  */
-const scratchFetch = (resource, options) => {
-    let augmentedOptions;
+const applyMetadata = options => {
     if (metadata.size > 0) {
-        augmentedOptions = Object.assign({}, options);
+        const augmentedOptions = Object.assign({}, options);
         augmentedOptions.headers = new Headers(Array.from(metadata));
         if (options?.headers) {
             const overrideHeaders =
@@ -38,9 +38,21 @@ const scratchFetch = (resource, options) => {
                 augmentedOptions.headers.set(name, value);
             }
         }
-    } else {
-        augmentedOptions = options;
+        return augmentedOptions;
     }
+    return options;
+};
+
+/**
+ * Make a network request.
+ * This is a wrapper for the global fetch method, adding some Scratch-specific functionality.
+ * @param {RequestInfo|URL} resource The resource to fetch.
+ * @param {RequestInit} options Optional object containing custom settings for this request.
+ * @see {@link https://developer.mozilla.org/docs/Web/API/fetch} for more about the fetch API.
+ * @returns {Promise<Response>} A promise for the response to the request.
+ */
+const scratchFetch = (resource, options) => {
+    const augmentedOptions = applyMetadata(options);
     return fetch(resource, augmentedOptions);
 };
 
@@ -54,8 +66,10 @@ const setMetadata = (name, value) => {
 };
 
 module.exports = {
-    RequestMetadata,
     default: scratchFetch,
+
+    RequestMetadata,
+    applyMetadata,
     scratchFetch,
     setMetadata
 };
