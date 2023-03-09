@@ -31,7 +31,7 @@ const applyMetadata = options => {
     if (metadata.size > 0) {
         const augmentedOptions = Object.assign({}, options);
         augmentedOptions.headers = new Headers(Array.from(metadata));
-        if (options?.headers) {
+        if (options && options.headers) {
             const overrideHeaders =
                 options.headers instanceof Headers ? options.headers : new Headers(options.headers);
             for (const [name, value] of overrideHeaders.entries()) {
