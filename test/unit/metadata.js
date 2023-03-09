@@ -50,7 +50,7 @@ tap.test('get without metadata', async t => {
 
 tap.test('get with metadata', async t => {
     const {scratchFetchModule, FetchTool} = setupModules();
-    const {setMetadata, RequestMetadata} = scratchFetchModule;
+    const {RequestMetadata, setMetadata} = scratchFetchModule;
 
     const tool = new FetchTool();
 
@@ -84,7 +84,7 @@ tap.test('send without metadata', async t => {
 
 tap.test('send with metadata', async t => {
     const {scratchFetchModule, FetchTool} = setupModules();
-    const {setMetadata, RequestMetadata} = scratchFetchModule;
+    const {RequestMetadata, setMetadata} = scratchFetchModule;
 
     const tool = new FetchTool();
 
@@ -100,4 +100,37 @@ tap.test('send with metadata', async t => {
     t.equal(mockFetchTestData.headersCount, 2);
     t.equal(mockFetchTestData.headers?.get(RequestMetadata.ProjectId), '4321');
     t.equal(mockFetchTestData.headers?.get(RequestMetadata.RunId), '8765');
+});
+
+tap.test('selectively delete metadata', async t => {
+    const {scratchFetchModule, FetchTool} = setupModules();
+    const {RequestMetadata, setMetadata, unsetMetadata} = scratchFetchModule;
+
+    // verify that these special values are preserved and not interpreted as "delete"
+    setMetadata(RequestMetadata.ProjectId, null);
+    setMetadata(RequestMetadata.RunId, void 0); // void 0 = undefined
+
+    const tool = new FetchTool();
+
+    /** @type import('../mocks/mockFetch.js').MockFetchTestData */
+    const mockFetchTestData = {};
+
+    const result1 = await tool.send({url: '200', mockFetchTestData});
+    t.type(result1, 'string');
+    t.ok(mockFetchTestData.headers, 'mockFetch did not report headers');
+
+    t.equal(mockFetchTestData.headersCount, 2);
+    t.equal(mockFetchTestData.headers?.get(RequestMetadata.ProjectId), 'null'); // string "null" means it's present
+    t.equal(mockFetchTestData.headers?.get(RequestMetadata.RunId), 'undefined');
+
+    // remove the Project ID from metadata
+    unsetMetadata(RequestMetadata.ProjectId);
+
+    const result2 = await tool.send({url: '200', mockFetchTestData});
+    t.type(result2, 'string');
+    t.ok(mockFetchTestData.headers, 'mockFetch did not report headers');
+
+    t.equal(mockFetchTestData.headersCount, 1);
+    t.equal(mockFetchTestData.headers?.get(RequestMetadata.ProjectId), null); // value `null` means it's missing
+    t.equal(mockFetchTestData.headers?.get(RequestMetadata.RunId), 'undefined');
 });

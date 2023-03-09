@@ -2,7 +2,7 @@ const {fetch, Headers} = require('cross-fetch');
 
 /**
  * Metadata header names
- * @enum {string}
+ * @enum {string} The enum value is the name of the associated header.
  * @readonly
  */
 const RequestMetadata = {
@@ -57,12 +57,22 @@ const scratchFetch = (resource, options) => {
 };
 
 /**
- *
+ * Set the value of a named request metadata item.
+ * Setting the value to `null` or `undefined` will NOT remove the item.
+ * Use `unsetMetadata` for that.
  * @param {RequestMetadata} name The name of the metadata item to set.
- * @param {any} value The value to set (will be converted to a string)
+ * @param {any} value The value to set (will be converted to a string).
  */
 const setMetadata = (name, value) => {
     metadata.set(name, value);
+};
+
+/**
+ * Remove a named request metadata item.
+ * @param {RequestMetadata} name The name of the metadata item to remove.
+ */
+const unsetMetadata = name => {
+    metadata.delete(name);
 };
 
 module.exports = {
@@ -71,5 +81,6 @@ module.exports = {
     RequestMetadata,
     applyMetadata,
     scratchFetch,
-    setMetadata
+    setMetadata,
+    unsetMetadata
 };
