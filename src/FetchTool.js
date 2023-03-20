@@ -9,12 +9,12 @@ const {scratchFetch} = require('./scratchFetch');
  */
 class FetchTool {
     /**
-     * Is get supported? false if the environment does not support fetch.
+     * Is get supported?
+     * Always true for `FetchTool` because `scratchFetch` ponyfills `fetch` if necessary.
      * @returns {boolean} Is get supported?
-     * @deprecated Fetch is always supported now
      */
     get isGetSupported () {
-        return typeof scratchFetch !== 'undefined';
+        return true;
     }
 
     /**
@@ -32,13 +32,12 @@ class FetchTool {
     }
 
     /**
-     * Is sending supported? false if the environment does not support sending
-     * with fetch.
+     * Is sending supported?
+     * Always true for `FetchTool` because `scratchFetch` ponyfills `fetch` if necessary.
      * @returns {boolean} Is sending supported?
-     * @deprecated Fetch is always supported now
      */
     get isSendSupported () {
-        return typeof scratchFetch !== 'undefined';
+        return true;
     }
 
     /**
