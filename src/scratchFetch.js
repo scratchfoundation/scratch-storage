@@ -13,10 +13,21 @@ const RequestMetadata = {
 };
 
 /**
- * Metadata for requests
- * @type {Map<string, string>}
+ * Metadata headers for requests
+ * @type {Headers}
  */
-const metadata = new Map();
+const metadata = new Headers();
+
+/**
+ * Check if there is any metadata to apply.
+ * @returns {boolean} true if `metadata` has contents, or false if it is empty.
+ */
+const hasMetadata = () => {
+    for (const _ of metadata) {
+        return true;
+    }
+    return false;
+};
 
 /**
  * Non-destructively merge any metadata state (if any) with the provided options object (if any).
@@ -28,10 +39,13 @@ const metadata = new Map();
  * @returns {RequestInit|undefined} the provided options parameter without modification, or a new options object.
  */
 const applyMetadata = options => {
-    if (metadata.size > 0) {
+    if (hasMetadata()) {
         const augmentedOptions = Object.assign({}, options);
-        augmentedOptions.headers = new Headers(Array.from(metadata));
+        augmentedOptions.headers = new Headers(metadata);
         if (options && options.headers) {
+            // the Fetch spec says options.headers could be:
+            // "A Headers object, an object literal, or an array of two-item arrays to set request's headers."
+            // turn it into a Headers object to be sure of how to interact with it
             const overrideHeaders =
                 options.headers instanceof Headers ? options.headers : new Headers(options.headers);
             for (const [name, value] of overrideHeaders.entries()) {
