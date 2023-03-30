@@ -1,5 +1,6 @@
 const tap = require('tap');
 const TextDecoder = require('util').TextDecoder;
+const crossFetch = require('cross-fetch');
 
 const {mockFetch, successText} = require('../mocks/mockFetch.js');
 
@@ -9,6 +10,7 @@ const {mockFetch, successText} = require('../mocks/mockFetch.js');
  */
 const FetchTool = tap.mock('../../src/FetchTool', {
     'cross-fetch': {
+        ...crossFetch, // Headers, etc.
         default: mockFetch,
         fetch: mockFetch
     }
