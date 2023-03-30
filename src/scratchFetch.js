@@ -7,9 +7,9 @@ const crossFetch = require('cross-fetch');
  */
 const RequestMetadata = {
     /** The ID of the project associated with this request */
-    ProjectId: 'X-ProjectId',
+    ProjectId: 'X-Project-ID',
     /** The ID of the project run associated with this request */
-    RunId: 'X-RunId'
+    RunId: 'X-Run-ID'
 };
 
 /**
