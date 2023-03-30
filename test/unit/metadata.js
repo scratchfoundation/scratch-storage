@@ -127,3 +127,21 @@ tap.test('selectively delete metadata', async t => {
     t.equal(mockFetchTestData.headers?.get(RequestMetadata.ProjectId), null); // value `null` means it's missing
     t.equal(mockFetchTestData.headers?.get(RequestMetadata.RunId), 'undefined');
 });
+
+tap.test('metadata has case-insensitive keys', async t => {
+    const {scratchFetchModule, FetchTool} = setupModules();
+    const {setMetadata} = scratchFetchModule;
+
+    setMetadata('foo', 1);
+    setMetadata('FOO', 2);
+
+    const tool = new FetchTool();
+
+    /** @type import('../mocks/mock-fetch.js').MockFetchTestData */
+    const mockFetchTestData = {};
+    await tool.get({url: '200', mockFetchTestData});
+
+    t.ok(mockFetchTestData.headers, 'mockFetch did not report headers');
+    t.equal(mockFetchTestData.headersCount, 1);
+    t.equal(mockFetchTestData.headers?.get('foo'), '2');
+});
