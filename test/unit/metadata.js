@@ -1,14 +1,7 @@
 const tap = require('tap');
 
-const crossFetch = require('cross-fetch');
+const mockFetchModule = require('../mocks/mock-fetch.js');
 
-const {mockFetch} = require('../mocks/mockFetch.js');
-
-const mockFetchModule = {
-    ...crossFetch, // Headers, Request, Response, etc.
-    default: mockFetch,
-    fetch: mockFetch
-};
 
 // Call this separately from each test to ensure that metadata gets reset.
 // This is especially important when parallelizing tests!
@@ -39,7 +32,7 @@ tap.test('get without metadata', async t => {
 
     const tool = new FetchTool();
 
-    /** @type import('../mocks/mockFetch.js').MockFetchTestData */
+    /** @type import('../mocks/mock-fetch.js').MockFetchTestData */
     const mockFetchTestData = {};
     const result = await tool.get({url: '200', mockFetchTestData});
 
@@ -57,7 +50,7 @@ tap.test('get with metadata', async t => {
     setMetadata(RequestMetadata.ProjectId, 1234);
     setMetadata(RequestMetadata.RunId, 5678);
 
-    /** @type import('../mocks/mockFetch.js').MockFetchTestData */
+    /** @type import('../mocks/mock-fetch.js').MockFetchTestData */
     const mockFetchTestData = {};
     const result = await tool.get({url: '200', mockFetchTestData});
 
@@ -73,7 +66,7 @@ tap.test('send without metadata', async t => {
 
     const tool = new FetchTool();
 
-    /** @type import('../mocks/mockFetch.js').MockFetchTestData */
+    /** @type import('../mocks/mock-fetch.js').MockFetchTestData */
     const mockFetchTestData = {};
     const result = await tool.send({url: '200', mockFetchTestData});
 
@@ -91,7 +84,7 @@ tap.test('send with metadata', async t => {
     setMetadata(RequestMetadata.ProjectId, 4321);
     setMetadata(RequestMetadata.RunId, 8765);
 
-    /** @type import('../mocks/mockFetch.js').MockFetchTestData */
+    /** @type import('../mocks/mock-fetch.js').MockFetchTestData */
     const mockFetchTestData = {};
     const result = await tool.send({url: '200', mockFetchTestData});
 
@@ -112,7 +105,7 @@ tap.test('selectively delete metadata', async t => {
 
     const tool = new FetchTool();
 
-    /** @type import('../mocks/mockFetch.js').MockFetchTestData */
+    /** @type import('../mocks/mock-fetch.js').MockFetchTestData */
     const mockFetchTestData = {};
 
     const result1 = await tool.send({url: '200', mockFetchTestData});
@@ -133,4 +126,22 @@ tap.test('selectively delete metadata', async t => {
     t.equal(mockFetchTestData.headersCount, 1);
     t.equal(mockFetchTestData.headers?.get(RequestMetadata.ProjectId), null); // value `null` means it's missing
     t.equal(mockFetchTestData.headers?.get(RequestMetadata.RunId), 'undefined');
+});
+
+tap.test('metadata has case-insensitive keys', async t => {
+    const {scratchFetchModule, FetchTool} = setupModules();
+    const {setMetadata} = scratchFetchModule;
+
+    setMetadata('foo', 1);
+    setMetadata('FOO', 2);
+
+    const tool = new FetchTool();
+
+    /** @type import('../mocks/mock-fetch.js').MockFetchTestData */
+    const mockFetchTestData = {};
+    await tool.get({url: '200', mockFetchTestData});
+
+    t.ok(mockFetchTestData.headers, 'mockFetch did not report headers');
+    t.equal(mockFetchTestData.headersCount, 1);
+    t.equal(mockFetchTestData.headers?.get('foo'), '2');
 });

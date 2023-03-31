@@ -1,4 +1,4 @@
-const {fetch, Headers} = require('cross-fetch');
+const crossFetch = require('cross-fetch');
 
 /**
  * Metadata header names
@@ -7,16 +7,27 @@ const {fetch, Headers} = require('cross-fetch');
  */
 const RequestMetadata = {
     /** The ID of the project associated with this request */
-    ProjectId: 'X-ProjectId',
+    ProjectId: 'X-Project-ID',
     /** The ID of the project run associated with this request */
-    RunId: 'X-RunId'
+    RunId: 'X-Run-ID'
 };
 
 /**
- * Metadata for requests
- * @type {Map<string, string>}
+ * Metadata headers for requests
+ * @type {Headers}
  */
-const metadata = new Map();
+const metadata = new crossFetch.Headers();
+
+/**
+ * Check if there is any metadata to apply.
+ * @returns {boolean} true if `metadata` has contents, or false if it is empty.
+ */
+const hasMetadata = () => {
+    for (const _ of metadata) {
+        return true;
+    }
+    return false;
+};
 
 /**
  * Non-destructively merge any metadata state (if any) with the provided options object (if any).
@@ -28,12 +39,15 @@ const metadata = new Map();
  * @returns {RequestInit|undefined} the provided options parameter without modification, or a new options object.
  */
 const applyMetadata = options => {
-    if (metadata.size > 0) {
+    if (hasMetadata()) {
         const augmentedOptions = Object.assign({}, options);
-        augmentedOptions.headers = new Headers(Array.from(metadata));
+        augmentedOptions.headers = new crossFetch.Headers(metadata);
         if (options && options.headers) {
-            const overrideHeaders =
-                options.headers instanceof Headers ? options.headers : new Headers(options.headers);
+            // the Fetch spec says options.headers could be:
+            // "A Headers object, an object literal, or an array of two-item arrays to set request's headers."
+            // turn it into a Headers object to be sure of how to interact with it
+            const overrideHeaders = options.headers instanceof crossFetch.Headers ?
+                options.headers : new crossFetch.Headers(options.headers);
             for (const [name, value] of overrideHeaders.entries()) {
                 augmentedOptions.headers.set(name, value);
             }
@@ -53,7 +67,7 @@ const applyMetadata = options => {
  */
 const scratchFetch = (resource, options) => {
     const augmentedOptions = applyMetadata(options);
-    return fetch(resource, augmentedOptions);
+    return crossFetch.fetch(resource, augmentedOptions);
 };
 
 /**
@@ -78,9 +92,22 @@ const unsetMetadata = name => {
 module.exports = {
     default: scratchFetch,
 
+    Headers: crossFetch.Headers,
     RequestMetadata,
     applyMetadata,
     scratchFetch,
     setMetadata,
     unsetMetadata
 };
+
+if (process.env.NODE_ENV === 'development') {
+    /**
+     * Retrieve a named request metadata item.
+     * Only for use in tests.
+     * @param {RequestMetadata} name The name of the metadata item to retrieve.
+     * @returns {any} value The value of the metadata item, or `undefined` if it was not found.
+     */
+    const getMetadata = name => metadata.get(name);
+
+    module.exports.getMetadata = getMetadata;
+}
