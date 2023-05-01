@@ -39,9 +39,9 @@ test('load', t => {
         const promise = storage.load(assetType, id);
         t.type(promise, 'Promise');
 
-        promises.push(promise);
+        const checkedPromise = promise.then(asset => checkAsset(assetType, id, asset));
 
-        promise.then(asset => checkAsset(assetType, id, asset));
+        promises.push(checkedPromise);
     }
 
     return Promise.all(promises);
