@@ -1,10 +1,11 @@
+const fs = require('fs');
+
 module.exports = {
     process (_sourceText, sourcePath) {
+        const buffer = fs.readFileSync(sourcePath);
+        const array = buffer.toJSON().data;
         return {
-            code: [
-                'const fs = require("fs");',
-                `module.exports = fs.readFileSync('${sourcePath}');`
-            ].join('\n')
+            code: `module.exports = Buffer.from([${array}]);`
         };
     }
 };
