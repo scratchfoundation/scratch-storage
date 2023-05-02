@@ -1,6 +1,5 @@
 const md5 = require('js-md5');
 
-jest.dontMock('cross-fetch'); // TODO: actually we should mock this...
 const ScratchStorage = require('../../src/index.js');
 
 test('constructor', () => {
@@ -21,45 +20,46 @@ test('constructor', () => {
  * @returns {AssetTestInfo[]} an array of asset info objects.
  */
 const getTestAssets = storage => [
-    // TODO: mock project download, since we can no longer download projects directly
-    // {
-    //     type: storage.AssetType.Project,
-    //     id: '117504922',
-    //     md5: null // don't check MD5 for project without revision ID
-    // },
-    // {
-    //     type: storage.AssetType.Project,
-    //     id: '117504922.d6ae1ffb76f2bc83421cd3f40fc4fd57',
-    //     md5: '1225460702e149727de28bff4cfd9e23'
-    // },
+    // Project
+    {
+        type: storage.AssetType.Project,
+        id: '117504922',
+        md5: '1225460702e149727de28bff4cfd9e23'
+    },
+    // SVG without explicit extension
     {
         type: storage.AssetType.ImageVector,
         id: 'f88bf1935daea28f8ca098462a31dbb0', // cat1-a
         md5: 'f88bf1935daea28f8ca098462a31dbb0'
     },
+    // SVG with explicit extension
     {
         type: storage.AssetType.ImageVector,
         id: '6e8bd9ae68fdb02b7e1e3df656a75635', // cat1-b
         md5: '6e8bd9ae68fdb02b7e1e3df656a75635',
         ext: storage.DataFormat.SVG
     },
+    // PNG without explicit extension
     {
         type: storage.AssetType.ImageBitmap,
         id: '7e24c99c1b853e52f8e7f9004416fa34', // squirrel
         md5: '7e24c99c1b853e52f8e7f9004416fa34'
     },
+    // PNG with explicit extension
     {
         type: storage.AssetType.ImageBitmap,
         id: '66895930177178ea01d9e610917f8acf', // bus
         md5: '66895930177178ea01d9e610917f8acf',
         ext: storage.DataFormat.PNG
     },
+    // JPG with explicit extension
     {
         type: storage.AssetType.ImageBitmap,
         id: 'fe5e3566965f9de793beeffce377d054', // building at MIT
         md5: 'fe5e3566965f9de793beeffce377d054',
         ext: storage.DataFormat.JPG
     },
+    // WAV without explicit extension
     {
         type: storage.AssetType.Sound,
         id: '83c36d806dc92327b9e7049a565c6bff', // meow
@@ -68,18 +68,15 @@ const getTestAssets = storage => [
 ];
 
 const addWebStores = storage => {
+    // these `asset => ...` callbacks generate values specifically for the cross-fetch mock
+    // in the real world they would generate proper URIs
     storage.addWebStore(
         [storage.AssetType.Project],
-        asset => {
-            const idParts = asset.assetId.split('.');
-            return idParts[1] ?
-                `https://cdn.projects.scratch.mit.edu/internalapi/project/${idParts[0]}/get/${idParts[1]}` :
-                `https://cdn.projects.scratch.mit.edu/internalapi/project/${idParts[0]}/get/`;
-        },
+        asset => asset.assetId,
         null, null);
     storage.addWebStore(
         [storage.AssetType.ImageVector, storage.AssetType.ImageBitmap, storage.AssetType.Sound],
-        asset => `https://cdn.assets.scratch.mit.edu/internalapi/asset/${asset.assetId}.${asset.dataFormat}/get/`,
+        asset => `${asset.assetId}.${asset.dataFormat}`,
         null, null
     );
 };
@@ -97,9 +94,34 @@ test('load', () => {
     const assetChecks = testAssets.map(async assetInfo => {
         const asset = await storage.load(assetInfo.type, assetInfo.id, assetInfo.ext)
             .catch(e => {
-                // test output isn't great if we just let it catch the unhandled promise rejection
-                // wrapping it like this makes a failure much easier to read in the test output
-                throw new Error(`failed to load ${assetInfo.type.name} asset with id=${assetInfo.id} (e=${e})`);
+                if (e instanceof Array) {
+                    // This is storage.load reporting one or more errors from individual tools.
+                    e = e.flat();
+
+                    if (e.length === 1) {
+                        // If we just have one, it'll display well as-is. Don't bother wrapping it.
+                        // Note that this still might be either an Error or a status code (see below).
+                        e = e[0];
+                    }
+                }
+
+                if (e instanceof Array) {
+                    /* global AggregateError */
+                    // we must have >1 error, so report it as an AggregateError (supported in Node 15+)
+                    e = new AggregateError(
+                        e.flat(),
+                        `failed to load ${assetInfo.type.name} asset with id=${assetInfo.id}`
+                    );
+                    // Jest doesn't display AggregateError very well on its own
+                    console.error(e);
+                } else if (!(e instanceof Error)) {
+                    // storage.load can throw a status like 403 or 500 which isn't an Error.
+                    // That can look confusing in test output, so wrap it in an Error that will display well.
+                    e = new Error(`failed to load ${assetInfo.type.name} asset with id=${assetInfo.id} (e=${e})`);
+                }
+                // else it's an Error that's already suitable for reporting
+
+                throw e;
             });
         expect(asset).toBeInstanceOf(storage.Asset);
         expect(asset.assetId).toBe(assetInfo.id);
