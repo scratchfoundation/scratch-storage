@@ -1,5 +1,6 @@
 const TextEncoder = require('util').TextEncoder;
-const crossFetch = require('cross-fetch');
+const crossFetch = jest.requireActual('cross-fetch');
+const knownAssets = require('../fixtures/known-assets.js');
 
 const Headers = crossFetch.Headers;
 const successText = 'successful response';
@@ -38,23 +39,31 @@ const mockFetch = (resource, options) => {
         options.mockFetchTestData.headers = new Headers(options.headers);
         options.mockFetchTestData.headersCount = Array.from(options.mockFetchTestData.headers).length;
     }
-    switch (resource) {
-    case '200':
+
+    const assetInfo = knownAssets[resource];
+    if (assetInfo) {
         results.ok = true;
         results.status = 200;
-        results.text = () => Promise.resolve(successText);
-        results.arrayBuffer = () => Promise.resolve(new TextEncoder().encode(successText));
-        break;
-    case '404':
-        results.ok = false;
-        results.status = 404;
-        break;
-    case '500':
-        results.ok = false;
-        results.status = 500;
-        break;
-    default:
-        throw new Error('unimplemented');
+        results.arrayBuffer = () => Promise.resolve(assetInfo.content);
+    } else {
+        switch (resource) {
+        case '200':
+            results.ok = true;
+            results.status = 200;
+            results.text = () => Promise.resolve(successText);
+            results.arrayBuffer = () => Promise.resolve(new TextEncoder().encode(successText));
+            break;
+        case '404':
+            results.ok = false;
+            results.status = 404;
+            break;
+        case '500':
+            results.ok = false;
+            results.status = 500;
+            break;
+        default:
+            throw new Error(`mockFetch doesn't know how to download: ${resource}`);
+        }
     }
     return Promise.resolve(results);
 };
