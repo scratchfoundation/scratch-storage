@@ -5,6 +5,12 @@ beforeEach(() => {
     // but this also means we need to `require` inside the tests
     /* eslint-disable global-require */
     jest.resetModules();
+
+    // temporary: pretend we're running in a browser and the URL has scratchMetadata=1
+    // this is a hack to enable the metadata feature in tests
+    // see also `hasMetadata` in scratchFetch.js
+    global.self = global.self || {};
+    global.self.location = new URL('https://example.com/?scratchMetadata=1');
 });
 
 test('get without metadata', async () => {

@@ -23,6 +23,19 @@ const metadata = new crossFetch.Headers();
  * @returns {boolean} true if `metadata` has contents, or false if it is empty.
  */
 const hasMetadata = () => {
+    /* global self */
+    const searchParams = (
+        typeof self !== 'undefined' &&
+        self &&
+        self.location &&
+        self.location.search &&
+        self.location.search.split(/[?&]/)
+    ) || [];
+    if (!searchParams.includes('scratchMetadata=1')) {
+        // for now, disable this feature unless scratchMetadata=1
+        // TODO: remove this check once we're sure the feature works correctly in production
+        return false;
+    }
     for (const _ of metadata) {
         return true;
     }
