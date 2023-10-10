@@ -19,12 +19,12 @@ permissions:
 jobs:
     ci-cd:
         runs-on: ubuntu-latest
-        env:
-            TRIGGER_DEPLOY: ${{ startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/heads/hotfix') || startsWith(github.ref, 'refs/heads/develop') || startsWith(github.ref, 'refs/heads/release') }}
         steps:
             - uses: actions/checkout@v4
+
             - uses: wagoid/commitlint-github-action@v5
               if: github.event_name == 'pull_request'
+              
             - uses: actions/setup-node@v3
               with:
                   cache: "npm"
