@@ -1,70 +1,69 @@
+# version: 2.1
+# orbs:
+#   commitlint: conventional-changelog/commitlint@1.0.0
+#   node: circleci/node@5.1.0
 
-version: 2.1
-orbs:
-  commitlint: conventional-changelog/commitlint@1.0.0
-  node: circleci/node@5.1.0
+# jobs:
+#   build-and-test:
+#     executor:
+#       name: node/default
+#       resource_class: medium
+#       tag: '16.19'
+#     steps:
+#       - checkout
+#       - node/install-packages
+#       - run: npm run build
+#       - run: npm run test
+#       - persist_to_workspace:
+#           root: ~/project
+#           paths:
+#             - .
+#   deploy:
+#     executor:
+#       name: node/default
+#       resource_class: medium
+#       tag: '16.19'
+#     steps:
+#       - attach_workspace:
+#           at: ~/project
+#       - run: npm run semantic-release
 
-jobs:
-  build-and-test:
-    executor:
-      name: node/default
-      resource_class: medium
-      tag: '16.19'
-    steps:
-      - checkout
-      - node/install-packages
-      - run: npm run build
-      - run: npm run test
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - .
-  deploy:
-    executor:
-      name: node/default
-      resource_class: medium
-      tag: '16.19'
-    steps:
-      - attach_workspace:
-          at: ~/project
-      - run: npm run semantic-release
+# workflows:
+#   commitlint:
+#     when:
+#       not:
+#         or:
+#           - equal: [ master, <<pipeline.git.branch>> ]
+#           - equal: [ develop, <<pipeline.git.branch>> ]
+#           - matches: { pattern: "^hotfix.*", value: <<pipeline.git.branch>> }
+#           - matches: { pattern: "^release.*", value: <<pipeline.git.branch>> }
+#     jobs:
+#       - commitlint/lint:
+#           target-branch: develop
 
-workflows:
-  commitlint:
-    when:
-      not:
-        or:
-          - equal: [ master, <<pipeline.git.branch>> ]
-          - equal: [ develop, <<pipeline.git.branch>> ]
-          - matches: { pattern: "^hotfix.*", value: <<pipeline.git.branch>> }
-          - matches: { pattern: "^release.*", value: <<pipeline.git.branch>> }
-    jobs:
-      - commitlint/lint:
-          target-branch: develop
+#   build-and-test-workflow:
+#     when:
+#       not:
+#         or:
+#           - equal: [ master, <<pipeline.git.branch>> ]
+#           - equal: [ develop, <<pipeline.git.branch>> ]
+#           - matches: { pattern: "^hotfix.*", value: <<pipeline.git.branch>> }
+#           - matches: { pattern: "^release.*", value: <<pipeline.git.branch>> }
+#     jobs:
+#       - build-and-test
 
-  build-and-test-workflow:
-    when:
-      not:
-        or:
-          - equal: [ master, <<pipeline.git.branch>> ]
-          - equal: [ develop, <<pipeline.git.branch>> ]
-          - matches: { pattern: "^hotfix.*", value: <<pipeline.git.branch>> }
-          - matches: { pattern: "^release.*", value: <<pipeline.git.branch>> }
-    jobs:
-      - build-and-test
+#   deploy-workflow:
+#     when:
+#       or:
+#         - equal: [ master, <<pipeline.git.branch>> ]
+#         - equal: [ develop, <<pipeline.git.branch>> ]
+#         - matches: { pattern: "^hotfix.*", value: <<pipeline.git.branch>> }
+#         - matches: { pattern: "^release.*", value: <<pipeline.git.branch>> }
 
-  deploy-workflow:
-    when:
-      or:
-        - equal: [ master, <<pipeline.git.branch>> ]
-        - equal: [ develop, <<pipeline.git.branch>> ]
-        - matches: { pattern: "^hotfix.*", value: <<pipeline.git.branch>> }
-        - matches: { pattern: "^release.*", value: <<pipeline.git.branch>> }
-
-    jobs:
-      - build-and-test
-      - deploy:
-          context:
-            - scratch-npm-creds
-          requires:
-            - build-and-test
+#     jobs:
+#       - build-and-test
+#       - deploy:
+#           context:
+#             - scratch-npm-creds
+#           requires:
+#             - build-and-test
