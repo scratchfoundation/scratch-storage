@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.5](https://github.com/scratchfoundation/scratch-storage/compare/v2.3.4...v2.3.5) (2024-02-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-semantic-release-config to v1.0.13 ([58a059b](https://github.com/scratchfoundation/scratch-storage/commit/58a059ba19e8051820f059f2e0d4fcb34e7e98ae))
+
 ## [2.3.4](https://github.com/scratchfoundation/scratch-storage/compare/v2.3.3...v2.3.4) (2024-02-22)
 
 
