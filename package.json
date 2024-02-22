@@ -48,7 +48,7 @@
     "@commitlint/travis-cli": "8.2.0",
     "@types/jest": "29.5.12",
     "babel-eslint": "10.1.0",
-    "babel-loader": "8.0.6",
+    "babel-loader": "8.3.0",
     "eslint": "8.55.0",
     "eslint-config-scratch": "9.0.3",
     "eslint-plugin-jest": "27.2.1",
