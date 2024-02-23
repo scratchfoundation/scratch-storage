@@ -11,12 +11,12 @@ This requires you to have Node.js installed.
 
 In your own Node.js environment/application:
 ```bash
-npm install https://github.com/LLK/scratch-storage.git
+npm install https://github.com/scratchfoundation/scratch-storage.git
 ```
 
 If you want to edit/play yourself (requires Git):
 ```bash
-git clone https://github.com/LLK/scratch-storage.git
+git clone https://github.com/scratchfoundation/scratch-storage.git
 cd scratch-storage
 npm install
 ```
