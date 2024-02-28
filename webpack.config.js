@@ -34,8 +34,7 @@ const base = {
     optimization: {
         minimizer: [
             new TerserPlugin({
-                include: /\.min\.js$/,
-                sourceMap: true
+                include: /\.min\.js$/
             })
         ]
     },
@@ -66,7 +65,7 @@ module.exports = [
         },
         output: {
             library: 'ScratchStorage',
-            libraryTarget: 'commonjs2',
+            libraryTarget: 'umd',
             path: path.resolve('dist', 'node'),
             filename: '[name].js'
         },
