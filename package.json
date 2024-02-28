@@ -12,7 +12,7 @@
   "main": "./dist/node/scratch-storage.js",
   "browser": "./dist/web/scratch-storage.js",
   "scripts": {
-    "build": "webpack --progress --colors --bail",
+    "build": "webpack --progress --bail",
     "commitmsg": "commitlint -e $GIT_PARAMS",
     "coverage": "tap ./test/{unit,integration}/*.js --coverage --coverage-report=lcov",
     "prepare": "husky install",
@@ -23,7 +23,7 @@
     "test:lint": "eslint .",
     "test:unit": "jest \"test[\\\\/]unit\"",
     "version": "json -f package.json -I -e \"this.repository.sha = '$(git log -n1 --pretty=format:%H)'\"",
-    "watch": "webpack --progress --colors --watch"
+    "watch": "webpack --progress --watch"
   },
   "tap": {
     "check-coverage": false
@@ -36,7 +36,7 @@
     "fastestsmallesttextencoderdecoder": "^1.0.7",
     "js-md5": "^0.7.3",
     "minilog": "^3.1.0",
-    "worker-loader": "^2.0.0"
+    "worker-loader": "^3.0.8"
   },
   "devDependencies": {
     "@babel/core": "7.23.9",
@@ -53,15 +53,15 @@
     "eslint-config-scratch": "9.0.8",
     "eslint-plugin-jest": "27.9.0",
     "eslint-plugin-react": "7.33.2",
-    "file-loader": "4.3.0",
+    "file-loader": "6.2.0",
     "husky": "8.0.3",
     "jest": "29.7.0",
     "json": "^9.0.4",
     "scratch-semantic-release-config": "1.0.14",
     "semantic-release": "19.0.5",
-    "uglifyjs-webpack-plugin": "2.2.0",
-    "webpack": "4.47.0",
-    "webpack-cli": "3.3.12"
+    "terser-webpack-plugin": "5.3.10",
+    "webpack": "5.90.3",
+    "webpack-cli": "5.1.4"
   },
   "config": {
     "commitizen": {
