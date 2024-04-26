@@ -59,7 +59,7 @@
     "json": "^9.0.4",
     "scratch-semantic-release-config": "1.0.14",
     "semantic-release": "19.0.5",
-    "uglifyjs-webpack-plugin": "2.2.0",
+    "terser-webpack-plugin": "1.4.5",
     "webpack": "4.47.0",
     "webpack-cli": "3.3.12"
   },
