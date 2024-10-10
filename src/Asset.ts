@@ -4,9 +4,14 @@ import {AssetType} from './AssetType';
 import {Buffer} from 'buffer';
 import {DataFormat} from './DataFormat';
 
+// TODO: The comments in this file indicate that the asset id is a string only, but
+// the types in BuiltinHelper and the default project builder in scratch-gui
+// allow for it to be a number as well.
+export type AssetId = string | number;
+
 export default class Asset {
     public assetType: AssetType;
-    public assetId?: string;
+    public assetId?: AssetId;
     public data!: Buffer;
     public dataFormat!: DataFormat;
     public dependencies: Asset[];
@@ -20,7 +25,7 @@ export default class Asset {
      * @param {Buffer} [data] - The in-memory data for this asset; optional.
      * @param {bool} [generateId] - Whether to create id from an md5 hash of data
      */
-    constructor (assetType: AssetType, assetId?: string, dataFormat?: DataFormat, data?: Buffer, generateId?: boolean) {
+    constructor (assetType: AssetType, assetId?: AssetId, dataFormat?: DataFormat, data?: Buffer, generateId?: boolean) {
         /** @type {AssetType} */
         this.assetType = assetType;
 

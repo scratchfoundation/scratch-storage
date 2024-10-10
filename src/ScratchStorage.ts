@@ -3,7 +3,7 @@ import log from './log';
 import BuiltinHelper from './BuiltinHelper';
 import WebHelper, {UrlFunction} from './WebHelper';
 
-import _Asset from './Asset';
+import _Asset, { AssetId } from './Asset';
 import {AssetType as _AssetType, AssetType} from './AssetType';
 import {DataFormat as _DataFormat, DataFormat} from './DataFormat';
 import _scratchFetch from './scratchFetch';
@@ -16,7 +16,7 @@ interface HelperWithPriority {
 }
 
 export class ScratchStorage {
-    public defaultAssetId: Record<AssetType['name'], string>;
+    public defaultAssetId: Record<AssetType['name'], AssetId>;
     public builtinHelper: BuiltinHelper;
     public webHelper: WebHelper;
 
@@ -120,7 +120,7 @@ export class ScratchStorage {
      * @param {string} id - The id for the cached asset.
      * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
      */
-    cache (assetType: AssetType, dataFormat: DataFormat, data: Buffer, id: string): string {
+    cache (assetType: AssetType, dataFormat: DataFormat, data: Buffer, id: AssetId): AssetId {
         log.warn('Deprecation: Storage.cache is deprecated. Use Storage.createAsset, and store assets externally.');
         return this.builtinHelper._store(assetType, dataFormat, data, id);
     }
@@ -134,7 +134,7 @@ export class ScratchStorage {
      * @param {bool} [generateId] - flag to set id to an md5 hash of data if `id` isn't supplied
      * @returns {Asset} generated Asset with `id` attribute set if not supplied
      */
-    createAsset (assetType: AssetType, dataFormat: DataFormat, data: Buffer, id: string, generateId: boolean): _Asset {
+    createAsset (assetType: AssetType, dataFormat: DataFormat, data: Buffer, id: AssetId, generateId: boolean): _Asset {
         if (!dataFormat) throw new Error('Tried to create asset without a dataFormat');
         return new _Asset(assetType, id, dataFormat, data, generateId);
     }
@@ -171,7 +171,7 @@ export class ScratchStorage {
      * @param {AssetType} type - Get the default ID for assets of this type.
      * @return {?string} The ID of the default asset of the given type, if any.
      */
-    getDefaultAssetId (type: AssetType): string | undefined {
+    getDefaultAssetId (type: AssetType): AssetId | undefined {
         if (Object.prototype.hasOwnProperty.call(this.defaultAssetId, type.name)) {
             return this.defaultAssetId[type.name];
         }
@@ -185,7 +185,7 @@ export class ScratchStorage {
      * @param {AssetType} type - The type of asset for which the default will be set.
      * @param {string} id - The default ID to use for this type of asset.
      */
-    setDefaultAssetId (type: AssetType, id: string): void {
+    setDefaultAssetId (type: AssetType, id: AssetId): void {
         this.defaultAssetId[type.name] = id;
     }
 
@@ -200,8 +200,7 @@ export class ScratchStorage {
      *   If the promise is rejected, there was an error on at least one asset source. HTTP 404 does not count as an
      *   error here, but (for example) HTTP 403 does.
      */
-    load (assetType: AssetType, assetId: string, dataFormat: DataFormat): Promise<_Asset | null> {
-        /** @type {Helper[]} */
+    load (assetType: AssetType, assetId: AssetId, dataFormat: DataFormat): Promise<_Asset | null> {
         const helpers = this._helpers.map(x => x.helper);
         const errors: unknown[] = [];
         dataFormat = dataFormat || assetType.runtimeFormat;
@@ -245,22 +244,19 @@ export class ScratchStorage {
      * @param {?string} [assetId] - The ID of the asset to fetch: a project ID, MD5, etc.
      * @return {Promise.<object>} A promise for asset metadata
      */
-    store (assetType: AssetType, dataFormat: DataFormat | null | undefined, data: Buffer, assetId?: string) {
+    store (assetType: AssetType, dataFormat: DataFormat | null | undefined, data: Buffer, assetId?: AssetId) {
         dataFormat = dataFormat || assetType.runtimeFormat;
-        return new Promise(
-            (resolve, reject) =>
-                this.webHelper.store(assetType, dataFormat, data, assetId)
-                    .then(body => {
-                        // The previous logic here ignored that the body can be a string (if it's not a JSON),
-                        // so just ignore that case.
-                        // Also, having undefined was the previous behavior
-                        // eslint-disable-next-line no-undefined
-                        const id = typeof body === 'string' ? undefined : body.id;
 
-                        this.builtinHelper._store(assetType, dataFormat, data, id);
-                        return resolve(body);
-                    })
-                    .catch(error => reject(error))
-        );
+        return this.webHelper.store(assetType, dataFormat, data, assetId)
+            .then(body => {
+                // The previous logic here ignored that the body can be a string (if it's not a JSON),
+                // so just ignore that case.
+                // Also, having undefined was the previous behavior
+                // eslint-disable-next-line no-undefined
+                const id = typeof body === 'string' ? undefined : body.id;
+
+                this.builtinHelper._store(assetType, dataFormat, data, id);
+                return body;
+            });
     }
 }

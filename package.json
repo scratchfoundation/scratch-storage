@@ -13,7 +13,7 @@
   "browser": "./dist/web/scratch-storage.js",
   "types": "./dist/types/index.d.ts",
   "scripts": {
-    "build": "webpack",
+    "build": "rm -rf dist && webpack",
     "commitmsg": "commitlint -e $GIT_PARAMS",
     "coverage": "tap ./test/{unit,integration}/*.js --coverage --coverage-report=lcov",
     "prepare": "husky install",

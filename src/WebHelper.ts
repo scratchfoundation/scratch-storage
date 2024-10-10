@@ -1,9 +1,9 @@
 import log from './log';
 
-import Asset from './Asset';
+import Asset, { AssetId } from './Asset';
 import Helper from './Helper';
 import ProxyTool from './ProxyTool';
-import {Tool} from './Tool';
+import {ScratchGetRequest, ScratchSendRequest, Tool} from './Tool';
 import {AssetType} from './AssetType';
 import {DataFormat} from './DataFormat';
 import {Buffer} from 'buffer';
@@ -24,7 +24,7 @@ const ensureRequestConfig = reqConfig => {
  *                              the underlying fetch call (necessary for configuring e.g. authentication)
  */
 
-export type UrlFunction = (asset: Asset) => string | RequestInit;
+export type UrlFunction = (asset: Asset) => string | ScratchGetRequest | ScratchSendRequest;
 
 interface StoreRecord {
     types: string[],
@@ -106,7 +106,7 @@ export default class WebHelper extends Helper {
      * @param {DataFormat} dataFormat - The file format / file extension of the asset to fetch: PNG, JPG, etc.
      * @return {Promise.<Asset>} A promise for the contents of the asset.
      */
-    load (assetType: AssetType, assetId: string, dataFormat: DataFormat): Promise<Asset | null> {
+    load (assetType: AssetType, assetId: AssetId, dataFormat: DataFormat): Promise<Asset | null> {
 
         /** @type {Array.<{url:string, result:*}>} List of URLs attempted & errors encountered. */
         const errors: unknown[] = [];
@@ -169,7 +169,7 @@ export default class WebHelper extends Helper {
         assetType: AssetType,
         dataFormat: DataFormat | undefined,
         data: Buffer,
-        assetId?: string
+        assetId?: AssetId
     ): Promise<string | {id: string}> {
         const asset = new Asset(assetType, assetId, dataFormat);
         // If we have an asset id, we should update, otherwise create to get an id
