@@ -1,6 +1,6 @@
 import FetchWorkerTool from './FetchWorkerTool';
 import {FetchTool} from './FetchTool';
-import { ScratchGetRequest, ScratchSendRequest, Tool } from './Tool';
+import {ScratchGetRequest, ScratchSendRequest, Tool} from './Tool';
 
 /**
  * @typedef {object} Request

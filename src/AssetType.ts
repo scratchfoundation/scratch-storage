@@ -1,4 +1,4 @@
-import { DataFormat } from './DataFormat';
+import {DataFormat} from './DataFormat';
 
 export interface AssetType {
     contentType: string,

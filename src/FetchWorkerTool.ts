@@ -1,5 +1,5 @@
 import {Headers, applyMetadata} from './scratchFetch';
-import { ScratchGetRequest, Tool } from './Tool';
+import {ScratchGetRequest, Tool} from './Tool';
 
 interface DeferredJob {
     id: string,

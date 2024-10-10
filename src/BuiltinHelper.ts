@@ -140,23 +140,23 @@ export default class BuiltinHelper extends Helper {
      * @param {(string|number)} id - The id for the cached asset.
      * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
      */
-    _store (assetType: AssetType, dataFormat: DataFormat, data: Buffer, originalId?: string | null): string {
-        let id = originalId;
+    _store (assetType: AssetType, dataFormat: DataFormat, data: Buffer, id?: string | null): string {
+        let assetId = id;
         if (!dataFormat) throw new Error('Data cached without specifying its format');
-        if (id !== '' && id !== null && typeof id !== 'undefined') {
-            if (Object.prototype.hasOwnProperty.call(this.assets, id) && assetType.immutable) return id;
+        if (assetId !== '' && assetId !== null && typeof assetId !== 'undefined') {
+            if (Object.prototype.hasOwnProperty.call(this.assets, assetId) && assetType.immutable) return assetId;
         } else if (assetType.immutable) {
-            id = md5(data);
+            assetId = md5(data);
         } else {
             throw new Error('Tried to cache data without an id');
         }
-        this.assets[id!] = {
+        this.assets[assetId!] = {
             type: assetType,
             format: dataFormat,
-            id: id!,
+            id: assetId!,
             data: data
         };
-        return id!;
+        return assetId!;
     }
 
     /**

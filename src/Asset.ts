@@ -1,8 +1,8 @@
 import md5 from 'js-md5';
 import {memoizedToString, _TextEncoder, _TextDecoder} from './memoizedToString';
-import { AssetType } from './AssetType';
-import { Buffer } from 'buffer';
-import { DataFormat } from './DataFormat';
+import {AssetType} from './AssetType';
+import {Buffer} from 'buffer';
+import {DataFormat} from './DataFormat';
 
 export default class Asset {
     public assetType: AssetType;

@@ -1,15 +1,14 @@
 import log from './log';
 
 import BuiltinHelper from './BuiltinHelper';
-import WebHelper, { UrlFunction } from './WebHelper';
+import WebHelper, {UrlFunction} from './WebHelper';
 
 import _Asset from './Asset';
 import {AssetType as _AssetType, AssetType} from './AssetType';
 import {DataFormat as _DataFormat, DataFormat} from './DataFormat';
 import _scratchFetch from './scratchFetch';
-import Asset from './Asset';
 import Helper from './Helper';
-import { Buffer } from 'buffer';
+import {Buffer} from 'buffer';
 
 interface HelperWithPriority {
     helper: Helper,
@@ -109,7 +108,7 @@ export class ScratchStorage {
      * @param {string} assetId - The id of the asset to fetch.
      * @returns {?Asset} The asset, if it exists.
      */
-    get (assetId: string): Asset | null {
+    get (assetId: string): _Asset | null {
         return this.builtinHelper.get(assetId);
     }
 
@@ -135,7 +134,7 @@ export class ScratchStorage {
      * @param {bool} [generateId] - flag to set id to an md5 hash of data if `id` isn't supplied
      * @returns {Asset} generated Asset with `id` attribute set if not supplied
      */
-    createAsset (assetType: AssetType, dataFormat: DataFormat, data: Buffer, id: string, generateId: boolean): Asset {
+    createAsset (assetType: AssetType, dataFormat: DataFormat, data: Buffer, id: string, generateId: boolean): _Asset {
         if (!dataFormat) throw new Error('Tried to create asset without a dataFormat');
         return new _Asset(assetType, id, dataFormat, data, generateId);
     }
@@ -147,7 +146,12 @@ export class ScratchStorage {
      * @param {UrlFunction} createFunction - A function which computes a POST URL for asset data.
      * @param {UrlFunction} updateFunction - A function which computes a PUT URL for asset data.
      */
-    addWebStore (types: AssetType[], getFunction: UrlFunction, createFunction?: UrlFunction, updateFunction?: UrlFunction): void {
+    addWebStore (
+        types: AssetType[],
+        getFunction: UrlFunction,
+        createFunction?: UrlFunction,
+        updateFunction?: UrlFunction
+    ): void {
         this.webHelper.addStore(types, getFunction, createFunction, updateFunction);
     }
 
@@ -196,15 +200,15 @@ export class ScratchStorage {
      *   If the promise is rejected, there was an error on at least one asset source. HTTP 404 does not count as an
      *   error here, but (for example) HTTP 403 does.
      */
-    load (assetType: AssetType, assetId: string, dataFormat: DataFormat): Promise<Asset | null> | null {
+    load (assetType: AssetType, assetId: string, dataFormat: DataFormat): Promise<_Asset | null> {
         /** @type {Helper[]} */
         const helpers = this._helpers.map(x => x.helper);
-        const errors: any[] = [];
+        const errors: unknown[] = [];
         dataFormat = dataFormat || assetType.runtimeFormat;
 
         let helperIndex = 0;
-        let helper;
-        const tryNextHelper = (err?: unknown) => {
+        let helper: Helper;
+        const tryNextHelper = (err?: unknown): Promise<_Asset | null> => {
             if (err) { // Track the error, but continue looking
                 errors.push(err);
             }
@@ -241,15 +245,16 @@ export class ScratchStorage {
      * @param {?string} [assetId] - The ID of the asset to fetch: a project ID, MD5, etc.
      * @return {Promise.<object>} A promise for asset metadata
      */
-    store (assetType, dataFormat, data, assetId) {
+    store (assetType: AssetType, dataFormat: DataFormat | null | undefined, data: Buffer, assetId?: string) {
         dataFormat = dataFormat || assetType.runtimeFormat;
         return new Promise(
             (resolve, reject) =>
-                // TODO: Iterate this.helpers
                 this.webHelper.store(assetType, dataFormat, data, assetId)
                     .then(body => {
                         // The previous logic here ignored that the body can be a string (if it's not a JSON),
                         // so just ignore that case.
+                        // Also, having undefined was the previous behavior
+                        // eslint-disable-next-line no-undefined
                         const id = typeof body === 'string' ? undefined : body.id;
 
                         this.builtinHelper._store(assetType, dataFormat, data, id);

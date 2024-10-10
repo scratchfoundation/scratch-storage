@@ -1,7 +1,7 @@
-import Asset from "./Asset";
-import { AssetType } from "./AssetType";
-import { DataFormat } from "./DataFormat";
-import {ScratchStorage} from "./ScratchStorage";
+import Asset from './Asset';
+import {AssetType} from './AssetType';
+import {DataFormat} from './DataFormat';
+import {ScratchStorage} from './ScratchStorage';
 
 /**
  * Base class for asset load/save helpers.
@@ -21,7 +21,7 @@ export default class Helper {
      * @param {DataFormat} dataFormat - The file format / file extension of the asset to fetch: PNG, JPG, etc.
      * @return {Promise.<Asset>} A promise for the contents of the asset.
      */
-    load (assetType: AssetType, assetId: string, dataFormat: DataFormat): null | Asset | Promise<Asset | null> {
+    load (assetType: AssetType, assetId: string, dataFormat: DataFormat): Promise<Asset | null> | null {
         return Promise.reject(new Error(`No asset of type ${assetType} for ID ${assetId} with format ${dataFormat}`));
     }
 }

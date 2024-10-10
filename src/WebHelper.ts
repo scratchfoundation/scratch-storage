@@ -3,10 +3,10 @@ import log from './log';
 import Asset from './Asset';
 import Helper from './Helper';
 import ProxyTool from './ProxyTool';
-import { Tool } from './Tool';
-import { AssetType } from './AssetType';
-import { DataFormat } from './DataFormat';
-import { Buffer } from 'buffer';
+import {Tool} from './Tool';
+import {AssetType} from './AssetType';
+import {DataFormat} from './DataFormat';
+import {Buffer} from 'buffer';
 
 const ensureRequestConfig = reqConfig => {
     if (typeof reqConfig === 'string') {
@@ -85,7 +85,12 @@ export default class WebHelper extends Helper {
      * @param {UrlFunction} createFunction - A function which computes a POST URL for an Asset
      * @param {UrlFunction} updateFunction - A function which computes a PUT URL for an Asset
      */
-    addStore (types: AssetType[], getFunction: UrlFunction, createFunction?: UrlFunction, updateFunction?: UrlFunction): void {
+    addStore (
+        types: AssetType[],
+        getFunction: UrlFunction,
+        createFunction?: UrlFunction,
+        updateFunction?: UrlFunction
+    ): void {
         this.stores.push({
             types: types.map(assetType => assetType.name),
             get: getFunction,
@@ -103,9 +108,8 @@ export default class WebHelper extends Helper {
      */
     load (assetType: AssetType, assetId: string, dataFormat: DataFormat): Promise<Asset | null> {
 
-        // TODO: Typing
         /** @type {Array.<{url:string, result:*}>} List of URLs attempted & errors encountered. */
-        const errors: any = [];
+        const errors: unknown[] = [];
         const stores = this.stores.slice()
             .filter(store => store.types.indexOf(assetType.name) >= 0);
 
@@ -161,7 +165,12 @@ export default class WebHelper extends Helper {
      * @param {?string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
      * @return {Promise.<object>} A promise for the response from the create or update request
      */
-    store (assetType: AssetType, dataFormat: DataFormat, data: Buffer, assetId?: string): Promise<string | {id: string}> {
+    store (
+        assetType: AssetType,
+        dataFormat: DataFormat | undefined,
+        data: Buffer,
+        assetId?: string
+    ): Promise<string | {id: string}> {
         const asset = new Asset(assetType, assetId, dataFormat);
         // If we have an asset id, we should update, otherwise create to get an id
         const create = assetId === '' || assetId === null || typeof assetId === 'undefined';
