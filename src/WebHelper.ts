@@ -1,8 +1,11 @@
-const log = require('./log');
+import log from './log';
 
-const Asset = require('./Asset');
-const Helper = require('./Helper');
-const ProxyTool = require('./ProxyTool');
+import Asset, {AssetData, AssetId} from './Asset';
+import Helper from './Helper';
+import ProxyTool from './ProxyTool';
+import {ScratchGetRequest, ScratchSendRequest, Tool} from './Tool';
+import {AssetType} from './AssetType';
+import {DataFormat} from './DataFormat';
 
 const ensureRequestConfig = reqConfig => {
     if (typeof reqConfig === 'string') {
@@ -20,7 +23,20 @@ const ensureRequestConfig = reqConfig => {
  *                              the underlying fetch call (necessary for configuring e.g. authentication)
  */
 
-class WebHelper extends Helper {
+export type UrlFunction = (asset: Asset) => string | ScratchGetRequest | ScratchSendRequest;
+
+interface StoreRecord {
+    types: string[],
+    get: UrlFunction,
+    create?: UrlFunction,
+    update?: UrlFunction
+}
+
+export default class WebHelper extends Helper {
+    public stores: StoreRecord[];
+    public assetTool: Tool;
+    public projectTool: Tool;
+
     constructor (parent) {
         super(parent);
 
@@ -56,7 +72,7 @@ class WebHelper extends Helper {
      * @param {Array.<AssetType>} types - The types of asset provided by this source.
      * @param {UrlFunction} urlFunction - A function which computes a URL from an Asset.
      */
-    addSource (types, urlFunction) {
+    addSource (types: AssetType[], urlFunction: UrlFunction): void {
         log.warn('Deprecation: WebHelper.addSource has been replaced with WebHelper.addStore.');
         this.addStore(types, urlFunction);
     }
@@ -68,7 +84,12 @@ class WebHelper extends Helper {
      * @param {UrlFunction} createFunction - A function which computes a POST URL for an Asset
      * @param {UrlFunction} updateFunction - A function which computes a PUT URL for an Asset
      */
-    addStore (types, getFunction, createFunction, updateFunction) {
+    addStore (
+        types: AssetType[],
+        getFunction: UrlFunction,
+        createFunction?: UrlFunction,
+        updateFunction?: UrlFunction
+    ): void {
         this.stores.push({
             types: types.map(assetType => assetType.name),
             get: getFunction,
@@ -84,13 +105,13 @@ class WebHelper extends Helper {
      * @param {DataFormat} dataFormat - The file format / file extension of the asset to fetch: PNG, JPG, etc.
      * @return {Promise.<Asset>} A promise for the contents of the asset.
      */
-    load (assetType, assetId, dataFormat) {
+    load (assetType: AssetType, assetId: AssetId, dataFormat: DataFormat): Promise<Asset | null> {
 
         /** @type {Array.<{url:string, result:*}>} List of URLs attempted & errors encountered. */
-        const errors = [];
+        const errors: unknown[] = [];
         const stores = this.stores.slice()
             .filter(store => store.types.indexOf(assetType.name) >= 0);
-        
+
         // New empty asset but it doesn't have data yet
         const asset = new Asset(assetType, assetId, dataFormat);
 
@@ -100,7 +121,7 @@ class WebHelper extends Helper {
         }
 
         let storeIndex = 0;
-        const tryNextSource = err => {
+        const tryNextSource = (err?: unknown): Promise<Asset | null> => {
             if (err) {
                 errors.push(err);
             }
@@ -143,7 +164,12 @@ class WebHelper extends Helper {
      * @param {?string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
      * @return {Promise.<object>} A promise for the response from the create or update request
      */
-    store (assetType, dataFormat, data, assetId) {
+    store (
+        assetType: AssetType,
+        dataFormat: DataFormat | undefined,
+        data: AssetData,
+        assetId?: AssetId
+    ): Promise<string | {id: string}> {
         const asset = new Asset(assetType, assetId, dataFormat);
         // If we have an asset id, we should update, otherwise create to get an id
         const create = assetId === '' || assetId === null || typeof assetId === 'undefined';
@@ -168,7 +194,10 @@ class WebHelper extends Helper {
         }
 
         const reqConfig = ensureRequestConfig(
-            create ? store.create(asset) : store.update(asset)
+            // The non-nullability of this gets checked above while looking up the store.
+            // Making TS understand that is going to require code refactoring which we currently don't
+            // feel safe to do.
+            create ? store.create!(asset) : store.update!(asset)
         );
         const reqBodyConfig = Object.assign({body: data, method}, reqConfig);
         return tool.send(reqBodyConfig)
@@ -191,5 +220,3 @@ class WebHelper extends Helper {
             });
     }
 }
-
-module.exports = WebHelper;

@@ -1,20 +1,32 @@
-const log = require('./log');
+import log from './log';
 
-const BuiltinHelper = require('./BuiltinHelper');
-const WebHelper = require('./WebHelper');
+import BuiltinHelper from './BuiltinHelper';
+import WebHelper, {UrlFunction} from './WebHelper';
 
-const _Asset = require('./Asset');
-const _AssetType = require('./AssetType');
-const _DataFormat = require('./DataFormat');
-const _scratchFetch = require('./scratchFetch');
+import _Asset, {AssetData, AssetId} from './Asset';
+import {AssetType as _AssetType, AssetType} from './AssetType';
+import {DataFormat as _DataFormat, DataFormat} from './DataFormat';
+import _scratchFetch from './scratchFetch';
+import Helper from './Helper';
 
-class ScratchStorage {
+interface HelperWithPriority {
+    helper: Helper,
+    priority: number
+}
+
+export class ScratchStorage {
+    public defaultAssetId: Record<AssetType['name'], AssetId>;
+    public builtinHelper: BuiltinHelper;
+    public webHelper: WebHelper;
+
+    private _helpers: HelperWithPriority[];
+
     constructor () {
         this.defaultAssetId = {};
 
         this.builtinHelper = new BuiltinHelper(this);
         this.webHelper = new WebHelper(this);
-        this.builtinHelper.registerDefaultAssets(this);
+        this.builtinHelper.registerDefaultAssets();
 
         this._helpers = [
             {
@@ -85,7 +97,7 @@ class ScratchStorage {
      * @param {Helper} helper - the helper to be added.
      * @param {number} [priority] - the priority for this new helper (default: 0).
      */
-    addHelper (helper, priority = 0) {
+    addHelper (helper: Helper, priority: number = 0) {
         this._helpers.push({helper, priority});
         this._helpers.sort((a, b) => b.priority - a.priority);
     }
@@ -95,7 +107,7 @@ class ScratchStorage {
      * @param {string} assetId - The id of the asset to fetch.
      * @returns {?Asset} The asset, if it exists.
      */
-    get (assetId) {
+    get (assetId: string): _Asset | null {
         return this.builtinHelper.get(assetId);
     }
 
@@ -107,7 +119,7 @@ class ScratchStorage {
      * @param {string} id - The id for the cached asset.
      * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
      */
-    cache (assetType, dataFormat, data, id) {
+    cache (assetType: AssetType, dataFormat: DataFormat, data: AssetData, id: AssetId): AssetId {
         log.warn('Deprecation: Storage.cache is deprecated. Use Storage.createAsset, and store assets externally.');
         return this.builtinHelper._store(assetType, dataFormat, data, id);
     }
@@ -121,7 +133,13 @@ class ScratchStorage {
      * @param {bool} [generateId] - flag to set id to an md5 hash of data if `id` isn't supplied
      * @returns {Asset} generated Asset with `id` attribute set if not supplied
      */
-    createAsset (assetType, dataFormat, data, id, generateId) {
+    createAsset (
+        assetType: AssetType,
+        dataFormat: DataFormat,
+        data: AssetData,
+        id: AssetId,
+        generateId: boolean
+    ): _Asset {
         if (!dataFormat) throw new Error('Tried to create asset without a dataFormat');
         return new _Asset(assetType, id, dataFormat, data, generateId);
     }
@@ -133,7 +151,12 @@ class ScratchStorage {
      * @param {UrlFunction} createFunction - A function which computes a POST URL for asset data.
      * @param {UrlFunction} updateFunction - A function which computes a PUT URL for asset data.
      */
-    addWebStore (types, getFunction, createFunction, updateFunction) {
+    addWebStore (
+        types: AssetType[],
+        getFunction: UrlFunction,
+        createFunction?: UrlFunction,
+        updateFunction?: UrlFunction
+    ): void {
         this.webHelper.addStore(types, getFunction, createFunction, updateFunction);
     }
 
@@ -143,7 +166,7 @@ class ScratchStorage {
      * @param {Array.<AssetType>} types - The types of asset provided by this source.
      * @param {UrlFunction} urlFunction - A function which computes a GET URL from an Asset.
      */
-    addWebSource (types, urlFunction) {
+    addWebSource (types: AssetType[], urlFunction: UrlFunction): void {
         log.warn('Deprecation: Storage.addWebSource has been replaced by addWebStore.');
         this.addWebStore(types, urlFunction);
     }
@@ -153,7 +176,7 @@ class ScratchStorage {
      * @param {AssetType} type - Get the default ID for assets of this type.
      * @return {?string} The ID of the default asset of the given type, if any.
      */
-    getDefaultAssetId (type) {
+    getDefaultAssetId (type: AssetType): AssetId | undefined {
         if (Object.prototype.hasOwnProperty.call(this.defaultAssetId, type.name)) {
             return this.defaultAssetId[type.name];
         }
@@ -167,7 +190,7 @@ class ScratchStorage {
      * @param {AssetType} type - The type of asset for which the default will be set.
      * @param {string} id - The default ID to use for this type of asset.
      */
-    setDefaultAssetId (type, id) {
+    setDefaultAssetId (type: AssetType, id: AssetId): void {
         this.defaultAssetId[type.name] = id;
     }
 
@@ -182,15 +205,14 @@ class ScratchStorage {
      *   If the promise is rejected, there was an error on at least one asset source. HTTP 404 does not count as an
      *   error here, but (for example) HTTP 403 does.
      */
-    load (assetType, assetId, dataFormat) {
-        /** @type {Helper[]} */
+    load (assetType: AssetType, assetId: AssetId, dataFormat: DataFormat): Promise<_Asset | null> {
         const helpers = this._helpers.map(x => x.helper);
-        const errors = [];
+        const errors: unknown[] = [];
         dataFormat = dataFormat || assetType.runtimeFormat;
 
         let helperIndex = 0;
-        let helper;
-        const tryNextHelper = err => {
+        let helper: Helper;
+        const tryNextHelper = (err?: unknown): Promise<_Asset | null> => {
             if (err) { // Track the error, but continue looking
                 errors.push(err);
             }
@@ -227,18 +249,19 @@ class ScratchStorage {
      * @param {?string} [assetId] - The ID of the asset to fetch: a project ID, MD5, etc.
      * @return {Promise.<object>} A promise for asset metadata
      */
-    store (assetType, dataFormat, data, assetId) {
+    store (assetType: AssetType, dataFormat: DataFormat | null | undefined, data: AssetData, assetId?: AssetId) {
         dataFormat = dataFormat || assetType.runtimeFormat;
-        return new Promise(
-            (resolve, reject) =>
-                this.webHelper.store(assetType, dataFormat, data, assetId)
-                    .then(body => {
-                        this.builtinHelper._store(assetType, dataFormat, data, body.id);
-                        return resolve(body);
-                    })
-                    .catch(error => reject(error))
-        );
+
+        return this.webHelper.store(assetType, dataFormat, data, assetId)
+            .then(body => {
+                // The previous logic here ignored that the body can be a string (if it's not a JSON),
+                // so just ignore that case.
+                // Also, having undefined was the previous behavior
+                // eslint-disable-next-line no-undefined
+                const id = typeof body === 'string' ? undefined : body.id;
+
+                this.builtinHelper._store(assetType, dataFormat, data, id);
+                return body;
+            });
     }
 }
-
-module.exports = ScratchStorage;

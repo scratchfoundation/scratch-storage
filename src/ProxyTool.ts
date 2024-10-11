@@ -1,5 +1,6 @@
-const FetchWorkerTool = require('./FetchWorkerTool');
-const FetchTool = require('./FetchTool');
+import FetchWorkerTool from './FetchWorkerTool';
+import {FetchTool} from './FetchTool';
+import {ScratchGetRequest, ScratchSendRequest, Tool} from './Tool';
 
 /**
  * @typedef {object} Request
@@ -9,12 +10,32 @@ const FetchTool = require('./FetchTool');
  * @property {boolean} withCredentials
  */
 
+type ToolFilter = typeof ProxyTool.TOOL_FILTER[keyof typeof ProxyTool.TOOL_FILTER];
+
 /**
  * Get and send assets with other tools in sequence.
  */
-class ProxyTool {
-    constructor (filter = ProxyTool.TOOL_FILTER.ALL) {
-        let tools;
+export default class ProxyTool implements Tool {
+    public tools: Tool[];
+
+    /**
+     * Constant values that filter the set of tools in a ProxyTool instance.
+     * @enum {string}
+     */
+    public static TOOL_FILTER = {
+        /**
+         * Use all tools.
+         */
+        ALL: 'all',
+
+        /**
+         * Use tools that are ready right now.
+         */
+        READY: 'ready'
+    } as const;
+
+    constructor (filter: ToolFilter = ProxyTool.TOOL_FILTER.ALL) {
+        let tools: Tool[];
         if (filter === ProxyTool.TOOL_FILTER.READY) {
             tools = [new FetchTool()];
         } else {
@@ -32,7 +53,7 @@ class ProxyTool {
      * Is get supported? false if all proxied tool return false.
      * @returns {boolean} Is get supported?
      */
-    get isGetSupported () {
+    get isGetSupported (): boolean {
         return this.tools.some(tool => tool.isGetSupported);
     }
 
@@ -41,9 +62,9 @@ class ProxyTool {
      * @param {Request} reqConfig - Request configuration for data to get.
      * @returns {Promise.<Buffer>} Resolve to Buffer of data from server.
      */
-    get (reqConfig) {
+    get (reqConfig: ScratchGetRequest): Promise<Uint8Array | null> {
         let toolIndex = 0;
-        const nextTool = err => {
+        const nextTool = (err?: unknown): Promise<Uint8Array | null> => {
             const tool = this.tools[toolIndex++];
             if (!tool) {
                 throw err;
@@ -60,7 +81,7 @@ class ProxyTool {
      * Is sending supported? false if all proxied tool return false.
      * @returns {boolean} Is sending supported?
      */
-    get isSendSupported () {
+    get isSendSupported (): boolean {
         return this.tools.some(tool => tool.isSendSupported);
     }
 
@@ -69,9 +90,9 @@ class ProxyTool {
      * @param {Request} reqConfig - Request configuration for data to send.
      * @returns {Promise.<Buffer|string|object>} Server returned metadata.
      */
-    send (reqConfig) {
+    send (reqConfig: ScratchSendRequest): Promise<string> {
         let toolIndex = 0;
-        const nextTool = err => {
+        const nextTool = (err?: unknown): Promise<string> => {
             const tool = this.tools[toolIndex++];
             if (!tool) {
                 throw err;
@@ -84,21 +105,3 @@ class ProxyTool {
         return nextTool();
     }
 }
-
-/**
- * Constant values that filter the set of tools in a ProxyTool instance.
- * @enum {string}
- */
-ProxyTool.TOOL_FILTER = {
-    /**
-     * Use all tools.
-     */
-    ALL: 'all',
-
-    /**
-     * Use tools that are ready right now.
-     */
-    READY: 'ready'
-};
-
-module.exports = ProxyTool;
