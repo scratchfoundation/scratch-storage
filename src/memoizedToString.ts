@@ -1,7 +1,18 @@
+import {AssetId} from './Asset';
+
+declare function require(name: 'fastestsmallesttextencoderdecoder'): {
+    TextEncoder: typeof TextEncoder,
+    TextDecoder: typeof TextDecoder
+};
+
+declare function require(name: 'base64-js'): {
+    fromByteArray: (data: Uint8Array) => string;
+};
+
 // Use JS implemented TextDecoder and TextEncoder if it is not provided by the
 // browser.
-let _TextDecoder;
-let _TextEncoder;
+let _TextDecoder: typeof TextDecoder;
+let _TextEncoder: typeof TextEncoder;
 if (typeof TextDecoder === 'undefined' || typeof TextEncoder === 'undefined') {
     // Wait to require the text encoding polyfill until we know it's needed.
     // eslint-disable-next-line global-require
@@ -15,23 +26,23 @@ if (typeof TextDecoder === 'undefined' || typeof TextEncoder === 'undefined') {
 
 const memoizedToString = (function () {
     /**
-   * The maximum length of a chunk before encoding it into base64.
-   *
-   * 32766 is a multiple of 3 so btoa does not need to use padding characters
-   * except for the final chunk where that is fine. 32766 is also close to
-   * 32768 so it is close to a size an memory allocator would prefer.
-   * @const {number}
-   */
+     * The maximum length of a chunk before encoding it into base64.
+     *
+     * 32766 is a multiple of 3 so btoa does not need to use padding characters
+     * except for the final chunk where that is fine. 32766 is also close to
+     * 32768 so it is close to a size an memory allocator would prefer.
+     * @const {number}
+     */
     const BTOA_CHUNK_MAX_LENGTH = 32766;
 
     /**
-   * An array cache of bytes to characters.
-   * @const {?Array.<string>}
-   */
-    let fromCharCode = null;
+     * An array cache of bytes to characters.
+     * @const {?Array.<string>}
+     */
+    let fromCharCode: string[] | null = null;
 
     const strings = {};
-    return (assetId, data) => {
+    return (assetId: AssetId, data: Uint8Array) => {
         if (!Object.prototype.hasOwnProperty.call(strings, assetId)) {
             if (typeof btoa === 'undefined') {
                 // Use a library that does not need btoa to run.
@@ -72,4 +83,4 @@ const memoizedToString = (function () {
     };
 }());
 
-module.exports = {memoizedToString, _TextEncoder, _TextDecoder};
+export {memoizedToString, _TextEncoder, _TextDecoder};

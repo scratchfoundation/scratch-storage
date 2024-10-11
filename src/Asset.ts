@@ -1,7 +1,6 @@
 import md5 from 'js-md5';
 import {memoizedToString, _TextEncoder, _TextDecoder} from './memoizedToString';
 import {AssetType} from './AssetType';
-import {Buffer} from 'buffer';
 import {DataFormat} from './DataFormat';
 
 // TODO: The comments in this file indicate that the asset id is a string only, but
@@ -12,8 +11,8 @@ export type AssetId = string | number;
 export default class Asset {
     public assetType: AssetType;
     public assetId?: AssetId;
-    public data!: Buffer;
-    public dataFormat!: DataFormat;
+    public data?: Uint8Array;
+    public dataFormat?: DataFormat;
     public dependencies: Asset[];
     public clean?: boolean;
 
@@ -25,7 +24,13 @@ export default class Asset {
      * @param {Buffer} [data] - The in-memory data for this asset; optional.
      * @param {bool} [generateId] - Whether to create id from an md5 hash of data
      */
-    constructor (assetType: AssetType, assetId?: AssetId, dataFormat?: DataFormat, data?: Buffer, generateId?: boolean) {
+    constructor (
+        assetType: AssetType,
+        assetId?: AssetId,
+        dataFormat?: DataFormat,
+        data?: Uint8Array,
+        generateId?: boolean
+    ) {
         /** @type {AssetType} */
         this.assetType = assetType;
 
@@ -38,7 +43,7 @@ export default class Asset {
         this.dependencies = [];
     }
 
-    setData (data, dataFormat, generateId?) {
+    setData (data: Uint8Array | undefined, dataFormat: DataFormat | undefined, generateId?: boolean) {
         if (data && !dataFormat) {
             throw new Error('Data provided without specifying its format');
         }
@@ -81,6 +86,6 @@ export default class Asset {
      */
     encodeDataURI (contentType: string): string {
         contentType = contentType || this.assetType.contentType;
-        return `data:${contentType};base64,${memoizedToString(this.assetId, this.data)}`;
+        return `data:${contentType};base64,${memoizedToString(this.assetId!, this.data!)}`;
     }
 }

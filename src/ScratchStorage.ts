@@ -3,12 +3,11 @@ import log from './log';
 import BuiltinHelper from './BuiltinHelper';
 import WebHelper, {UrlFunction} from './WebHelper';
 
-import _Asset, { AssetId } from './Asset';
+import _Asset, {AssetId} from './Asset';
 import {AssetType as _AssetType, AssetType} from './AssetType';
 import {DataFormat as _DataFormat, DataFormat} from './DataFormat';
 import _scratchFetch from './scratchFetch';
 import Helper from './Helper';
-import {Buffer} from 'buffer';
 
 interface HelperWithPriority {
     helper: Helper,
@@ -120,7 +119,7 @@ export class ScratchStorage {
      * @param {string} id - The id for the cached asset.
      * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
      */
-    cache (assetType: AssetType, dataFormat: DataFormat, data: Buffer, id: AssetId): AssetId {
+    cache (assetType: AssetType, dataFormat: DataFormat, data: Uint8Array, id: AssetId): AssetId {
         log.warn('Deprecation: Storage.cache is deprecated. Use Storage.createAsset, and store assets externally.');
         return this.builtinHelper._store(assetType, dataFormat, data, id);
     }
@@ -134,7 +133,13 @@ export class ScratchStorage {
      * @param {bool} [generateId] - flag to set id to an md5 hash of data if `id` isn't supplied
      * @returns {Asset} generated Asset with `id` attribute set if not supplied
      */
-    createAsset (assetType: AssetType, dataFormat: DataFormat, data: Buffer, id: AssetId, generateId: boolean): _Asset {
+    createAsset (
+        assetType: AssetType,
+        dataFormat: DataFormat,
+        data: Uint8Array,
+        id: AssetId,
+        generateId: boolean
+    ): _Asset {
         if (!dataFormat) throw new Error('Tried to create asset without a dataFormat');
         return new _Asset(assetType, id, dataFormat, data, generateId);
     }
@@ -244,7 +249,7 @@ export class ScratchStorage {
      * @param {?string} [assetId] - The ID of the asset to fetch: a project ID, MD5, etc.
      * @return {Promise.<object>} A promise for asset metadata
      */
-    store (assetType: AssetType, dataFormat: DataFormat | null | undefined, data: Buffer, assetId?: AssetId) {
+    store (assetType: AssetType, dataFormat: DataFormat | null | undefined, data: Uint8Array, assetId?: AssetId) {
         dataFormat = dataFormat || assetType.runtimeFormat;
 
         return this.webHelper.store(assetType, dataFormat, data, assetId)

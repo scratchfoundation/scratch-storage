@@ -11,9 +11,9 @@ import Helper from './Helper';
 export default ScratchStorage;
 
 export {
-  Asset,
-  AssetId,
-  AssetType,
-  DataFormat,
-  Helper
+    Asset,
+    AssetId,
+    AssetType,
+    DataFormat,
+    Helper
 };

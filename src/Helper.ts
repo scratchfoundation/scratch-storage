@@ -1,4 +1,4 @@
-import Asset, { AssetId } from './Asset';
+import Asset, {AssetId} from './Asset';
 import {AssetType} from './AssetType';
 import {DataFormat} from './DataFormat';
 import {ScratchStorage} from './ScratchStorage';

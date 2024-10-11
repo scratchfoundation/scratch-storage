@@ -1,12 +1,11 @@
 import log from './log';
 
-import Asset, { AssetId } from './Asset';
+import Asset, {AssetId} from './Asset';
 import Helper from './Helper';
 import ProxyTool from './ProxyTool';
 import {ScratchGetRequest, ScratchSendRequest, Tool} from './Tool';
 import {AssetType} from './AssetType';
 import {DataFormat} from './DataFormat';
-import {Buffer} from 'buffer';
 
 const ensureRequestConfig = reqConfig => {
     if (typeof reqConfig === 'string') {
@@ -168,7 +167,7 @@ export default class WebHelper extends Helper {
     store (
         assetType: AssetType,
         dataFormat: DataFormat | undefined,
-        data: Buffer,
+        data: Uint8Array,
         assetId?: AssetId
     ): Promise<string | {id: string}> {
         const asset = new Asset(assetType, assetId, dataFormat);
