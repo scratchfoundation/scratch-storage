@@ -2,7 +2,7 @@ import md5 from 'js-md5';
 
 import log from './log';
 
-import Asset, {AssetId} from './Asset';
+import Asset, {AssetData, AssetId} from './Asset';
 import {AssetType} from './AssetType';
 import {DataFormat} from './DataFormat';
 import Helper from './Helper';
@@ -26,7 +26,7 @@ interface BuiltinAssetRecord {
     type: AssetType,
     format: DataFormat,
     id: AssetId | null,
-    data: Uint8Array
+    data: AssetData
 }
 
 /**
@@ -113,7 +113,7 @@ export default class BuiltinHelper extends Helper {
      * @param {string} id - The id for the cached asset.
      * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
      */
-    cache (assetType: AssetType, dataFormat: DataFormat, data: Uint8Array, id: AssetId): AssetId {
+    cache (assetType: AssetType, dataFormat: DataFormat, data: AssetData, id: AssetId): AssetId {
         log.warn('Deprecation: BuiltinHelper.cache has been replaced with BuiltinHelper.store.');
         return this.store(assetType, dataFormat, data, id);
     }
@@ -127,7 +127,7 @@ export default class BuiltinHelper extends Helper {
      * @param {(string|number)} id - The id for the cached asset.
      * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
      */
-    store (assetType: AssetType, dataFormat: DataFormat, data: Uint8Array, id: AssetId): AssetId {
+    store (assetType: AssetType, dataFormat: DataFormat, data: AssetData, id: AssetId): AssetId {
         log.warn('Deprecation: use Storage.createAsset. BuiltinHelper is for internal use only.');
         return this._store(assetType, dataFormat, data, id);
     }
@@ -140,7 +140,7 @@ export default class BuiltinHelper extends Helper {
      * @param {(string|number)} id - The id for the cached asset.
      * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
      */
-    _store (assetType: AssetType, dataFormat: DataFormat, data: Uint8Array, id?: AssetId | null): AssetId {
+    _store (assetType: AssetType, dataFormat: DataFormat, data: AssetData, id?: AssetId | null): AssetId {
         let assetId = id;
         if (!dataFormat) throw new Error('Data cached without specifying its format');
         if (assetId !== '' && assetId !== null && typeof assetId !== 'undefined') {

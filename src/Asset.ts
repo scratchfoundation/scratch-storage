@@ -8,10 +8,13 @@ import {DataFormat} from './DataFormat';
 // allow for it to be a number as well.
 export type AssetId = string | number;
 
+// Projects are strings, other assets are byte arrays
+export type AssetData = string | Uint8Array;
+
 export default class Asset {
     public assetType: AssetType;
     public assetId?: AssetId;
-    public data?: Uint8Array;
+    public data?: AssetData;
     public dataFormat?: DataFormat;
     public dependencies: Asset[];
     public clean?: boolean;
@@ -28,7 +31,7 @@ export default class Asset {
         assetType: AssetType,
         assetId?: AssetId,
         dataFormat?: DataFormat,
-        data?: Uint8Array,
+        data?: AssetData,
         generateId?: boolean
     ) {
         /** @type {AssetType} */
@@ -43,7 +46,7 @@ export default class Asset {
         this.dependencies = [];
     }
 
-    setData (data: Uint8Array | undefined, dataFormat: DataFormat | undefined, generateId?: boolean) {
+    setData (data: AssetData | undefined, dataFormat: DataFormat | undefined, generateId?: boolean) {
         if (data && !dataFormat) {
             throw new Error('Data provided without specifying its format');
         }
@@ -66,7 +69,10 @@ export default class Asset {
      */
     decodeText (): string {
         const decoder = new _TextDecoder();
-        return decoder.decode(this.data);
+
+        // The data may be string, but it seems like this function is only called if the data is a byte array?
+        // This was the behavior of the code when we added TS
+        return decoder.decode(this.data as Uint8Array);
     }
 
     /**
@@ -86,6 +92,9 @@ export default class Asset {
      */
     encodeDataURI (contentType: string): string {
         contentType = contentType || this.assetType.contentType;
-        return `data:${contentType};base64,${memoizedToString(this.assetId!, this.data!)}`;
+
+        // The data may be string, but it seems like this function is only called if the data is a byte array?
+        // This was the behavior of the code when we added TS
+        return `data:${contentType};base64,${memoizedToString(this.assetId!, this.data as Uint8Array)}`;
     }
 }

@@ -1,6 +1,6 @@
 import log from './log';
 
-import Asset, {AssetId} from './Asset';
+import Asset, {AssetData, AssetId} from './Asset';
 import Helper from './Helper';
 import ProxyTool from './ProxyTool';
 import {ScratchGetRequest, ScratchSendRequest, Tool} from './Tool';
@@ -167,7 +167,7 @@ export default class WebHelper extends Helper {
     store (
         assetType: AssetType,
         dataFormat: DataFormat | undefined,
-        data: Uint8Array,
+        data: AssetData,
         assetId?: AssetId
     ): Promise<string | {id: string}> {
         const asset = new Asset(assetType, assetId, dataFormat);
