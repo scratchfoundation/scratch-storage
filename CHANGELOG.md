@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0](https://github.com/scratchfoundation/scratch-storage/compare/v2.3.284...v3.0.0) (2024-10-23)
+
+
+* chore!: can't have a default and non-default exports in commonjs ([ff5b428](https://github.com/scratchfoundation/scratch-storage/commit/ff5b428e7152b97671262da1d7ac08f3abfe7259))
+
+
+### BREAKING CHANGES
+
+* The ScratchStorage constructor is now exported
+as a named export instead of a default export.
+
 ## [2.3.284](https://github.com/scratchfoundation/scratch-storage/compare/v2.3.283...v2.3.284) (2024-10-23)
 
 
