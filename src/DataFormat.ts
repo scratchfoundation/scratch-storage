@@ -2,7 +2,7 @@
  * Enumeration of the supported data formats.
  * @enum {string}
  */
-const DataFormat = {
+export const DataFormat = {
     JPG: 'jpg',
     JSON: 'json',
     MP3: 'mp3',
@@ -11,6 +11,6 @@ const DataFormat = {
     SB3: 'sb3',
     SVG: 'svg',
     WAV: 'wav'
-};
+} as const;
 
-module.exports = DataFormat;
+export type DataFormat = typeof DataFormat[keyof typeof DataFormat];

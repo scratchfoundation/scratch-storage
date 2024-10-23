@@ -1,6 +1,6 @@
 const md5 = require('js-md5');
 
-const ScratchStorage = require('../../src/index.js');
+const ScratchStorage = require('../../src/index').default;
 
 test('constructor', () => {
     const storage = new ScratchStorage();

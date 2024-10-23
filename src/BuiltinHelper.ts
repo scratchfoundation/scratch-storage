@@ -1,11 +1,18 @@
-const md5 = require('js-md5');
+import md5 from 'js-md5';
 
-const log = require('./log');
+import log from './log';
 
-const Asset = require('./Asset');
-const AssetType = require('./AssetType');
-const DataFormat = require('./DataFormat');
-const Helper = require('./Helper');
+import Asset, {AssetData, AssetId} from './Asset';
+import {AssetType} from './AssetType';
+import {DataFormat} from './DataFormat';
+import Helper from './Helper';
+
+import defaultImageBitmap from './builtins/defaultBitmap.png?arrayBuffer';
+import defaultSound from './builtins/defaultSound.wav?arrayBuffer';
+import defaultImageVector from './builtins/defaultVector.svg?arrayBuffer';
+
+import {Buffer} from 'buffer/';
+import {ScratchStorage} from './ScratchStorage';
 
 /**
  * @typedef {object} BuiltinAssetRecord
@@ -15,33 +22,34 @@ const Helper = require('./Helper');
  * @property {Buffer} data - The asset's data.
  */
 
+interface BuiltinAssetRecord {
+    type: AssetType,
+    format: DataFormat,
+    id: AssetId | null,
+    data: AssetData
+}
+
 /**
  * @type {BuiltinAssetRecord[]}
  */
-const DefaultAssets = [
+const DefaultAssets: BuiltinAssetRecord[] = [
     {
         type: AssetType.ImageBitmap,
         format: DataFormat.PNG,
         id: null,
-        data: Buffer.from(
-            require('./builtins/defaultBitmap.png') // eslint-disable-line global-require
-        )
+        data: Buffer.from(defaultImageBitmap)
     },
     {
         type: AssetType.Sound,
         format: DataFormat.WAV,
         id: null,
-        data: Buffer.from(
-            require('./builtins/defaultSound.wav') // eslint-disable-line global-require
-        )
+        data: Buffer.from(defaultSound)
     },
     {
         type: AssetType.ImageVector,
         format: DataFormat.SVG,
         id: null,
-        data: Buffer.from(
-            require('./builtins/defaultVector.svg') // eslint-disable-line global-require
-        )
+        data: Buffer.from(defaultImageVector)
     }
 ];
 
@@ -51,8 +59,10 @@ const DefaultAssets = [
 const BuiltinAssets = DefaultAssets.concat([
 ]);
 
-class BuiltinHelper extends Helper {
-    constructor (parent) {
+export default class BuiltinHelper extends Helper {
+    public assets: Record<string, BuiltinAssetRecord>;
+
+    constructor (parent: ScratchStorage) {
         super(parent);
 
         /**
@@ -70,11 +80,11 @@ class BuiltinHelper extends Helper {
     /**
      * Call `setDefaultAssetId` on the parent `ScratchStorage` instance to register all built-in default assets.
      */
-    registerDefaultAssets () {
+    registerDefaultAssets (): void {
         const numAssets = DefaultAssets.length;
         for (let assetIndex = 0; assetIndex < numAssets; ++assetIndex) {
             const assetRecord = DefaultAssets[assetIndex];
-            this.parent.setDefaultAssetId(assetRecord.type, assetRecord.id);
+            this.parent.setDefaultAssetId(assetRecord.type, assetRecord.id!);
         }
     }
 
@@ -84,12 +94,12 @@ class BuiltinHelper extends Helper {
      * @param {string} assetId - The id for the asset to fetch.
      * @returns {?Asset} The asset for assetId, if it exists.
      */
-    get (assetId) {
-        let asset = null;
+    get (assetId: AssetId): Asset | null {
+        let asset: Asset | null = null;
         if (Object.prototype.hasOwnProperty.call(this.assets, assetId)) {
             /** @type{BuiltinAssetRecord} */
             const assetRecord = this.assets[assetId];
-            asset = new Asset(assetRecord.type, assetRecord.id, assetRecord.format, assetRecord.data);
+            asset = new Asset(assetRecord.type, assetRecord.id!, assetRecord.format, assetRecord.data);
         }
         return asset;
     }
@@ -103,7 +113,7 @@ class BuiltinHelper extends Helper {
      * @param {string} id - The id for the cached asset.
      * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
      */
-    cache (assetType, dataFormat, data, id) {
+    cache (assetType: AssetType, dataFormat: DataFormat, data: AssetData, id: AssetId): AssetId {
         log.warn('Deprecation: BuiltinHelper.cache has been replaced with BuiltinHelper.store.');
         return this.store(assetType, dataFormat, data, id);
     }
@@ -117,7 +127,7 @@ class BuiltinHelper extends Helper {
      * @param {(string|number)} id - The id for the cached asset.
      * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
      */
-    store (assetType, dataFormat, data, id) {
+    store (assetType: AssetType, dataFormat: DataFormat, data: AssetData, id: AssetId): AssetId {
         log.warn('Deprecation: use Storage.createAsset. BuiltinHelper is for internal use only.');
         return this._store(assetType, dataFormat, data, id);
     }
@@ -130,22 +140,23 @@ class BuiltinHelper extends Helper {
      * @param {(string|number)} id - The id for the cached asset.
      * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
      */
-    _store (assetType, dataFormat, data, id) {
+    _store (assetType: AssetType, dataFormat: DataFormat, data: AssetData, id?: AssetId | null): AssetId {
+        let assetId = id;
         if (!dataFormat) throw new Error('Data cached without specifying its format');
-        if (id !== '' && id !== null && typeof id !== 'undefined') {
-            if (Object.prototype.hasOwnProperty.call(this.assets, id) && assetType.immutable) return id;
+        if (assetId !== '' && assetId !== null && typeof assetId !== 'undefined') {
+            if (Object.prototype.hasOwnProperty.call(this.assets, assetId) && assetType.immutable) return assetId;
         } else if (assetType.immutable) {
-            id = md5(data);
+            assetId = md5(data);
         } else {
             throw new Error('Tried to cache data without an id');
         }
-        this.assets[id] = {
+        this.assets[assetId!] = {
             type: assetType,
             format: dataFormat,
-            id: id,
+            id: assetId!,
             data: data
         };
-        return id;
+        return assetId!;
     }
 
     /**
@@ -154,7 +165,7 @@ class BuiltinHelper extends Helper {
      * @param {string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
      * @return {?Promise.<Asset>} A promise for the contents of the asset.
      */
-    load (assetType, assetId) {
+    load (assetType: AssetType, assetId: AssetId): Promise<Asset | null> | null {
         if (!this.get(assetId)) {
             // Return null immediately so Storage can quickly move to trying the
             // next helper.
@@ -163,5 +174,3 @@ class BuiltinHelper extends Helper {
         return Promise.resolve(this.get(assetId));
     }
 }
-
-module.exports = BuiltinHelper;
