@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.284](https://github.com/scratchfoundation/scratch-storage/compare/v2.3.283...v2.3.284) (2024-10-23)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([ceb347a](https://github.com/scratchfoundation/scratch-storage/commit/ceb347a1b98346d61d8407ef59e0cf68752fcf26))
+
+## [2.3.283](https://github.com/scratchfoundation/scratch-storage/compare/v2.3.282...v2.3.283) (2024-10-22)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([162a3fb](https://github.com/scratchfoundation/scratch-storage/commit/162a3fb7404ca207e4e0b5991af3e87ada44314b))
+
+## [2.3.282](https://github.com/scratchfoundation/scratch-storage/compare/v2.3.281...v2.3.282) (2024-10-20)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([c396683](https://github.com/scratchfoundation/scratch-storage/commit/c3966830ff320b13d2af49f23e1a530078daedf9))
+
+## [2.3.281](https://github.com/scratchfoundation/scratch-storage/compare/v2.3.280...v2.3.281) (2024-10-19)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([479979f](https://github.com/scratchfoundation/scratch-storage/commit/479979fce84312cf82fb80e46aeb1ea1d6cc29c0))
+* **deps:** lock file maintenance ([d36f71c](https://github.com/scratchfoundation/scratch-storage/commit/d36f71c6ad82e9b9b67de71d67512e8726eb884f))
+* **deps:** lock file maintenance ([632d22a](https://github.com/scratchfoundation/scratch-storage/commit/632d22a0b60b6dcd40f36cba28ae10817b0f4725))
+* **deps:** lock file maintenance ([a657cd8](https://github.com/scratchfoundation/scratch-storage/commit/a657cd8768021e49e008e202375a07beb4d90e58))
+
+## [2.3.280](https://github.com/scratchfoundation/scratch-storage/compare/v2.3.279...v2.3.280) (2024-10-15)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([0baa15c](https://github.com/scratchfoundation/scratch-storage/commit/0baa15c44017f10225ead1595edf38c10f6ec4d8))
+
+## [2.3.279](https://github.com/scratchfoundation/scratch-storage/compare/v2.3.278...v2.3.279) (2024-10-15)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([8447a35](https://github.com/scratchfoundation/scratch-storage/commit/8447a353aa6c36b33742cbe4be421849e829d8d8))
+
+## [2.3.278](https://github.com/scratchfoundation/scratch-storage/compare/v2.3.277...v2.3.278) (2024-10-12)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([65cbf02](https://github.com/scratchfoundation/scratch-storage/commit/65cbf02cd1b70f3ca814d4edf20baca6f3a45b32))
+
 ## [2.3.277](https://github.com/scratchfoundation/scratch-storage/compare/v2.3.276...v2.3.277) (2024-10-11)
 
 
