@@ -27,10 +27,11 @@ if (!process.env.CI) {
 const webConfig = baseConfig.clone()
     .merge({
         output: {
-            library: 'ScratchStorage',
-            libraryTarget: 'umd',
+            library: {
+                name: 'ScratchStorage',
+                type: 'umd2'
+            },
             path: path.resolve(__dirname, 'dist', 'web'),
-            filename: '[name].js',
             clean: false
         }
     });
@@ -62,10 +63,11 @@ const nodeConfig = baseConfig.clone()
             'scratch-storage': path.join(__dirname, './src/index.ts')
         },
         output: {
-            libraryTarget: 'commonjs2',
+            library: {
+                type: 'commonjs2'
+            },
             chunkFormat: 'commonjs',
             path: path.resolve(__dirname, 'dist', 'node'),
-            filename: '[name].js',
             clean: false
         }
     })
