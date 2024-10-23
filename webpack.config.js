@@ -63,6 +63,7 @@ const nodeConfig = baseConfig.clone()
         },
         output: {
             libraryTarget: 'commonjs2',
+            chunkFormat: 'commonjs',
             path: path.resolve(__dirname, 'dist', 'node'),
             filename: '[name].js',
             clean: false
