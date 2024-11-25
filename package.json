@@ -2,7 +2,7 @@
   "name": "scratch-storage",
   "version": "3.0.39",
   "description": "Load and store project and asset files for Scratch 3.0",
-  "license": "BSD-3-Clause",
+  "license": "AGPL-3.0-only",
   "homepage": "https://github.com/scratchfoundation/scratch-storage#readme",
   "repository": {
     "type": "git",
