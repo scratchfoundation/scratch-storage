@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0](https://github.com/scratchfoundation/scratch-storage/compare/v3.0.39...v4.0.0) (2024-11-25)
+
+
+* chore!: set license to AGPL-3.0-only ([9de39ba](https://github.com/scratchfoundation/scratch-storage/commit/9de39bae84ed3eccc24f1b60cb51e822b20f160d))
+
+
+### BREAKING CHANGES
+
+* This project is now licensed under the AGPL version 3.0
+
+See https://www.scratchfoundation.org/open-source-license
+
 ## [3.0.39](https://github.com/scratchfoundation/scratch-storage/compare/v3.0.38...v3.0.39) (2024-11-25)
 
 
