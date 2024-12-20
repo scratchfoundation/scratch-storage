@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.23](https://github.com/scratchfoundation/scratch-storage/compare/v4.0.22...v4.0.23) (2024-12-20)
+
+
+### Bug Fixes
+
+* **deps:** buffer is a runtime dependency ([3616355](https://github.com/scratchfoundation/scratch-storage/commit/361635522767fdbbf2816e9ddc943bdd2d59fca4))
+
 ## [4.0.22](https://github.com/scratchfoundation/scratch-storage/compare/v4.0.21...v4.0.22) (2024-12-10)
 
 
