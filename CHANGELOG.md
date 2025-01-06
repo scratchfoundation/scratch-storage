@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.23](https://github.com/scratchfoundation/scratch-storage/compare/v4.0.22...v4.0.23) (2024-12-20)
+
+
+### Bug Fixes
+
+* **deps:** buffer is a runtime dependency ([3616355](https://github.com/scratchfoundation/scratch-storage/commit/361635522767fdbbf2816e9ddc943bdd2d59fca4))
+
+## [4.0.22](https://github.com/scratchfoundation/scratch-storage/compare/v4.0.21...v4.0.22) (2024-12-10)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([ca84557](https://github.com/scratchfoundation/scratch-storage/commit/ca84557ec72679bd039fc315d38a6a63e4ee431b))
+
+## [4.0.21](https://github.com/scratchfoundation/scratch-storage/compare/v4.0.20...v4.0.21) (2024-12-08)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([578d4e0](https://github.com/scratchfoundation/scratch-storage/commit/578d4e0166ff0c64220735d375ad80a32b01f863))
+
+## [4.0.20](https://github.com/scratchfoundation/scratch-storage/compare/v4.0.19...v4.0.20) (2024-12-08)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([1ec15b8](https://github.com/scratchfoundation/scratch-storage/commit/1ec15b823c8c403770efd5ab43815990fc66bb74))
+
+## [4.0.19](https://github.com/scratchfoundation/scratch-storage/compare/v4.0.18...v4.0.19) (2024-12-07)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([eda0fbb](https://github.com/scratchfoundation/scratch-storage/commit/eda0fbb26f7c45fa46609650b787586dff510a7d))
+
+## [4.0.18](https://github.com/scratchfoundation/scratch-storage/compare/v4.0.17...v4.0.18) (2024-12-07)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([4be8838](https://github.com/scratchfoundation/scratch-storage/commit/4be8838f76930f3ec06411874c3c1cd8b56a4a3c))
+
 ## [4.0.17](https://github.com/scratchfoundation/scratch-storage/compare/v4.0.16...v4.0.17) (2024-12-06)
 
 
