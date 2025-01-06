@@ -69,10 +69,13 @@ const mockFetch = (resource, options) => {
 };
 
 // Mimic the cross-fetch module, but replace its `fetch` with `mockFetch` and add a few extras
-module.exports = {
-    ...crossFetch, // Headers, Request, Response, etc.
-    default: mockFetch,
-    fetch: mockFetch,
-    mockFetch,
-    successText
-};
+
+module.exports = exports = mockFetch;
+exports.fetch = mockFetch;
+exports.Headers = crossFetch.Headers;
+exports.Request = crossFetch.Request;
+exports.Response = crossFetch.Response;
+exports.successText = successText;
+
+// Needed for TypeScript consumers without esModuleInterop.
+exports.default = mockFetch;
