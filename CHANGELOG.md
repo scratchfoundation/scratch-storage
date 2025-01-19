@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.33](https://github.com/scratchfoundation/scratch-storage/compare/v4.0.32...v4.0.33) (2025-01-19)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([62bb60b](https://github.com/scratchfoundation/scratch-storage/commit/62bb60bab4256fe434d90ed87561de243a52ca70))
+
 ## [4.0.32](https://github.com/scratchfoundation/scratch-storage/compare/v4.0.31...v4.0.32) (2025-01-16)
 
 
