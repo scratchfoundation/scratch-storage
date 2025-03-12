@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.78](https://github.com/scratchfoundation/scratch-storage/compare/v4.0.77...v4.0.78) (2025-03-12)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @babel/runtime to v7.26.10 [security] ([190f48f](https://github.com/scratchfoundation/scratch-storage/commit/190f48fa44e37a033f4871f4808ea2ac2fbc22db))
+
 ## [4.0.77](https://github.com/scratchfoundation/scratch-storage/compare/v4.0.76...v4.0.77) (2025-03-12)
 
 
