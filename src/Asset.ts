@@ -18,6 +18,7 @@ export default class Asset {
     public dataFormat?: DataFormat;
     public dependencies: Asset[];
     public clean?: boolean;
+    public provenance?: AssetId;
 
     /**
      * Construct an Asset.
@@ -44,6 +45,10 @@ export default class Asset {
 
         /** @type {Asset[]} */
         this.dependencies = [];
+    }
+
+    setProvenance(id: AssetId | undefined) {
+        this.provenance = id;
     }
 
     setData (data: AssetData | undefined, dataFormat: DataFormat | undefined, generateId?: boolean) {
