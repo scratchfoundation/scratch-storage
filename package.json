@@ -1,13 +1,13 @@
 {
   "name": "scratch-storage",
-  "version": "4.0.109",
+  "version": "4.0.110",
   "description": "Load and store project and asset files for Scratch 3.0",
   "license": "AGPL-3.0-only",
   "homepage": "https://github.com/scratchfoundation/scratch-storage#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/scratchfoundation/scratch-storage.git",
-    "sha": "9a9ac75fe28a825b66da006266e2063cb2974840"
+    "sha": "b033e2dbbf6bab4e6c71440c1d827ca9daf9c20d"
   },
   "main": "./dist/node/scratch-storage.js",
   "browser": "./dist/web/scratch-storage.js",
