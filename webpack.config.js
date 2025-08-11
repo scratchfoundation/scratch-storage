@@ -8,7 +8,8 @@ const baseConfig = new ScratchWebpackConfigBuilder(
         rootPath: path.resolve(__dirname),
         enableReact: false,
         enableTs: true,
-        shouldSplitChunks: false
+        shouldSplitChunks: false,
+        publicPath: 'auto'
     })
     .setTarget('browserslist')
     .merge({
