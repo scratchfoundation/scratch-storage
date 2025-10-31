@@ -1,5 +1,5 @@
 /**
- * @fileoverview Tests the build output to verify the public API of scratch-storage.
+ * @file Tests the build output to verify the general parts of the public API.
  */
 
 const ScratchStorageModule = require('../../dist/node/scratch-storage.js');
@@ -57,13 +57,4 @@ test('Helper', () => {
     expect(Helper).toBeDefined();
     const helper = new Helper();
     expect(helper).toBeInstanceOf(Helper);
-});
-
-test('scratchFetch API', () => {
-    const scratchFetch = storage.scratchFetch;
-    expect(scratchFetch).toBeDefined();
-    expect(typeof scratchFetch.scratchFetch).toBe('function');
-    expect(typeof scratchFetch.setMetadata).toBe('function');
-    expect(typeof scratchFetch.unsetMetadata).toBe('function');
-    expect(typeof scratchFetch.getMetadata).toBe('function');
 });
