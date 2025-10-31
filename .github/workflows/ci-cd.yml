@@ -40,8 +40,10 @@ jobs:
             - name: Setup & Test
               run: |
                   npm ci
+                  npm run clean
+                  npm run test # runs on source files
                   npm run build
-                  npm run test
+                  npm run test:build # requires build output
 
             - name: Semantic release (configured to run dry if branch is other than 'develop')
               env:
