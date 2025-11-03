@@ -14,6 +14,13 @@ interface HelperWithPriority {
     priority: number
 }
 
+export interface StoreMetadata {
+    /**
+     * The assetId of the asset that the currently uploaded one is based on.
+     */
+    provenance?: AssetId;
+}
+
 export class ScratchStorage {
     public defaultAssetId: Record<AssetType['name'], AssetId>;
     public builtinHelper: BuiltinHelper;
@@ -246,10 +253,11 @@ export class ScratchStorage {
      * @param {AssetType} assetType - The type of asset to fetch. This also determines which asset store to use.
      * @param {?DataFormat} [dataFormat] - Optional: load this format instead of the AssetType's default.
      * @param {Buffer} data - Data to store for the asset
-     * @param {?string} [assetId] - The ID of the asset to fetch: a project ID, MD5, etc.
+     * @param {?string} [assetId] - The ID of the asset to store: a project ID, MD5, etc.
+     * @param {?object} [_storeMetadata] - Optional: metadata for the save operation
      * @return {Promise.<object>} A promise for asset metadata
      */
-    store (assetType: AssetType, dataFormat: DataFormat | null | undefined, data: AssetData, assetId?: AssetId) {
+    store (assetType: AssetType, dataFormat: DataFormat | null | undefined, data: AssetData, assetId?: AssetId, _storeMetadata?: StoreMetadata) {
         dataFormat = dataFormat || assetType.runtimeFormat;
 
         return this.webHelper.store(assetType, dataFormat, data, assetId)

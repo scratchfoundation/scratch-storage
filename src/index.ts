@@ -1,4 +1,4 @@
-import {ScratchStorage} from './ScratchStorage';
+import {ScratchStorage, StoreMetadata} from './ScratchStorage';
 import Asset, {AssetId} from './Asset';
 import {AssetType} from './AssetType';
 import {DataFormat} from './DataFormat';
@@ -15,5 +15,6 @@ export {
     AssetId,
     AssetType,
     DataFormat,
-    Helper
+    Helper,
+    StoreMetadata
 };
