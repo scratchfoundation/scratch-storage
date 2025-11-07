@@ -49,7 +49,7 @@
     "@commitlint/travis-cli": "8.3.6",
     "@types/jest": "29.5.14",
     "babel-loader": "9.2.1",
-    "eslint": "9.39.0",
+    "eslint": "9.39.1",
     "eslint-config-scratch": "12.0.25",
     "file-loader": "6.2.0",
     "husky": "8.0.3",
