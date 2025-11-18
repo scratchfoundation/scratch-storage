@@ -1,7 +1,8 @@
 const TextDecoder = require('util').TextDecoder;
 
-jest.mock('cross-fetch');
-const mockFetch = require('cross-fetch');
+const mockFetch = require('../fixtures/mockFetch.js');
+jest.spyOn(global, 'fetch').mockImplementation(mockFetch.fetch);
+
 const {FetchTool} = require('../../src/FetchTool');
 
 test('send success returns response.text()', async () => {

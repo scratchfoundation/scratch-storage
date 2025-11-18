@@ -1,7 +1,5 @@
 /* eslint-env worker */
 
-const crossFetch = require('cross-fetch').default;
-
 let jobsActive = 0;
 const complete = [];
 
@@ -51,7 +49,7 @@ const onMessage = ({data: job}) => {
 
     jobsActive++;
 
-    crossFetch(job.url, job.options)
+    fetch(job.url, job.options)
         .then(result => {
             if (result.ok) return result.arrayBuffer();
             if (result.status === 404) return null;
@@ -62,6 +60,6 @@ const onMessage = ({data: job}) => {
         .then(() => jobsActive--);
 };
 
-// crossFetch means "fetch" is now always supported
+// "fetch" is supported in Node.js as of 16.15 and our target browsers as of ~2017
 postMessage({support: {fetch: true}});
 self.addEventListener('message', onMessage);

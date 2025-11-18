@@ -1,4 +1,5 @@
-jest.mock('cross-fetch');
+const mockFetch = require('../fixtures/mockFetch.js');
+jest.spyOn(global, 'fetch').mockImplementation(mockFetch.fetch);
 
 beforeEach(() => {
     // reset the metadata container to ensure the tests don't interfere with each other
