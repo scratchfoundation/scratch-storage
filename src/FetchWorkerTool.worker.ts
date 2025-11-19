@@ -1,9 +1,23 @@
 /* eslint-env worker */
+/* eslint-disable-next-line spaced-comment */
+/// <reference lib="webworker" />
+
+interface JobMessage {
+    id: string,
+    url: string;
+    options: RequestInit | undefined;
+}
+
+interface CompletionMessage {
+    id: string,
+    buffer?: ArrayBuffer | null;
+    error?: string;
+}
 
 let jobsActive = 0;
-const complete = [];
+const complete: CompletionMessage[] = [];
 
-let intervalId = null;
+let intervalId: ReturnType<typeof setInterval> | undefined = void 0;
 
 /**
  * Register a step function.
@@ -26,23 +40,23 @@ const registerStep = function () {
                 // been sent to the window. This lets us send a lot of data
                 // without the normal postMessage behaviour of making a copy of
                 // all of the data for the window.
-                complete.map(response => response.buffer).filter(Boolean)
+                complete.map(response => response.buffer).filter(Boolean) as Transferable[]
             );
             complete.length = 0;
         }
         if (jobsActive === 0) {
             clearInterval(intervalId);
-            intervalId = null;
+            intervalId = void 0;
         }
     }, 1);
 };
 
 /**
  * Receive a job from the parent and fetch the requested data.
- * @param {object} message The message from the parent.
- * @param {object} message.data A job id, url, and options descriptor to perform.
+ * @param message The message from the parent.
+ * @param message.data A job id, url, and options descriptor to perform.
  */
-const onMessage = ({data: job}) => {
+const onMessage = ({data: job}: MessageEvent<JobMessage>) => {
     if (jobsActive === 0 && !intervalId) {
         registerStep();
     }
