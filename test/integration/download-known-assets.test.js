@@ -75,11 +75,11 @@ const addWebStores = storage => {
     // in the real world they would generate proper URIs
     storage.addWebStore(
         [storage.AssetType.Project],
-        asset => asset.assetId,
+        asset => `http://example.com/${asset.assetId}`,
         null, null);
     storage.addWebStore(
         [storage.AssetType.ImageVector, storage.AssetType.ImageBitmap, storage.AssetType.Sound],
-        asset => `${asset.assetId}.${asset.dataFormat}`,
+        asset => `http://example.com/${asset.assetId}.${asset.dataFormat}`,
         null, null
     );
 };

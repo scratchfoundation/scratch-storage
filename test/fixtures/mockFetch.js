@@ -37,7 +37,7 @@ const successText = 'successful response';
  * @returns {Promise<MockFetchResponse>} A promise for a Response-like object. Does not fully implement Response.
  */
 const mockFetch = (resource, options) => {
-    /** @type MockFetchResponse */
+    /** @type {MockFetchResponse} */
     const results = {
         ok: false,
         status: 0
@@ -46,13 +46,15 @@ const mockFetch = (resource, options) => {
         options.mockFetchTestData.headers = new Headers(options.headers);
         options.mockFetchTestData.headersCount = Array.from(options.mockFetchTestData.headers).length;
     }
-    const assetInfo = knownAssets[resource];
+    const request = new Request(resource, options);
+    const path = new URL(request.url).pathname.slice(1); // remove leading '/'
+    const assetInfo = knownAssets[path];
     if (assetInfo) {
         results.ok = true;
         results.status = 200;
         results.arrayBuffer = () => Promise.resolve(assetInfo.content);
     } else {
-        switch (resource) {
+        switch (path) {
         case '200':
             results.ok = true;
             results.status = 200;
