@@ -1,4 +1,4 @@
-import {type QueueOptions} from '../../scratch-editor/packages/task-herder/dist/TaskQueue';
+import {type QueueOptions} from '@scratch/task-herder';
 import {hostQueueManager} from './HostQueues';
 
 export const Headers = globalThis.Headers;
