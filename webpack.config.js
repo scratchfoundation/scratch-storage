@@ -32,7 +32,6 @@ const webConfig = baseConfig.clone()
                 type: 'umd2'
             },
             path: path.resolve(__dirname, 'dist', 'web'),
-            publicPath: 'auto',
             clean: false
         }
     });
