@@ -187,50 +187,60 @@ export default class WebHelper extends Helper {
         // If we have an asset id, we should update, otherwise create to get an id
         const create = assetId === '' || assetId === null || typeof assetId === 'undefined';
 
-        // Use the first store with the appropriate asset type and url function
-        const store = this.stores.filter(s =>
+        const candidateStores = this.stores.filter(s =>
             // Only use stores for the incoming asset type
             s.types.indexOf(assetType.name) !== -1 && (
                 // Only use stores that have a create function if this is a create request
                 // or an update function if this is an update request
                 (create && s.create) || s.update
             )
-        )[0];
+        );
 
         const method = create ? 'post' : 'put';
 
-        if (!store) return Promise.reject(new Error('No appropriate stores'));
+        if (candidateStores.length === 0) {
+            return Promise.reject(new Error('No appropriate stores'));
+        }
 
         let tool = this.assetTool;
         if (assetType.name === 'Project') {
             tool = this.projectTool;
         }
 
-        const reqConfig = await ensureRequestConfig(
-            // The non-nullability of this gets checked above while looking up the store.
-            // Making TS understand that is going to require code refactoring which we currently don't
-            // feel safe to do.
-            create ? store.create!(asset) : store.update!(asset)
-        );
-        const reqBodyConfig = Object.assign({body: data, method}, reqConfig);
+        for (const store of candidateStores) {
+            const reqConfig = await ensureRequestConfig(
+                // The non-nullability of this gets checked above while looking up the store.
+                // Making TS understand that is going to require code refactoring which we currently don't
+                // feel safe to do.
+                create ? store.create!(asset) : store.update!(asset)
+            );
 
-        let body = await tool.send(reqBodyConfig);
-
-        // xhr makes it difficult to both send FormData and
-        // automatically parse a JSON response. So try to parse
-        // everything as JSON.
-        if (typeof body === 'string') {
-            try {
-                body = JSON.parse(body);
-            } catch (parseError) { // eslint-disable-line @typescript-eslint/no-unused-vars
-                // If it's not parseable, then we can't add the id even
-                // if we want to, so stop here
-                return body;
+            if (!reqConfig) {
+                continue;
             }
+
+            const reqBodyConfig = Object.assign({body: data, method}, reqConfig);
+
+            let body = await tool.send(reqBodyConfig);
+
+            // xhr makes it difficult to both send FormData and
+            // automatically parse a JSON response. So try to parse
+            // everything as JSON.
+            if (typeof body === 'string') {
+                try {
+                    body = JSON.parse(body);
+                } catch (parseError) { // eslint-disable-line @typescript-eslint/no-unused-vars
+                    // If it's not parseable, then we can't add the id even
+                    // if we want to, so stop here
+                    return body;
+                }
+            }
+
+            return Object.assign({
+                id: body['content-name'] || assetId
+            }, body);
         }
 
-        return Object.assign({
-            id: body['content-name'] || assetId
-        }, body);
+        return Promise.reject(new Error('No store could handle the request'));
     }
 }
