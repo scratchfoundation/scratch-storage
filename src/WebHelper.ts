@@ -144,12 +144,12 @@ export default class WebHelper extends Helper {
             const reqConfigFunction = store && store.get;
 
             if (reqConfigFunction) {
-                const reqConfig = await ensureRequestConfig(reqConfigFunction(asset));
-                if (!reqConfig) {
-                    continue;
-                }
-
                 try {
+                    const reqConfig = await ensureRequestConfig(reqConfigFunction(asset));
+                    if (!reqConfig) {
+                        continue;
+                    }
+
                     const body = await tool.get(reqConfig);
                     if (body) {
                         asset.setData(body, dataFormat);
