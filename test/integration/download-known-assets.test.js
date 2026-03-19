@@ -140,3 +140,50 @@ test('load', () => {
 
     return Promise.all(assetChecks);
 });
+
+test('load using async UrlFunction', () => {
+    const storage = new ScratchStorage();
+
+    // these `asset => ...` callbacks generate values specifically for the fetch mock
+    // in the real world they would generate proper URIs
+    storage.addWebStore(
+        [storage.AssetType.Project],
+        async asset => {
+            await new Promise(resolve => setTimeout(() => resolve(), 0));
+
+            return `http://example.com/${asset.assetId}`;
+        },
+        null,
+        null
+    );
+
+    storage.addWebStore(
+        [storage.AssetType.ImageVector, storage.AssetType.ImageBitmap, storage.AssetType.Sound],
+        async asset => {
+            await new Promise(resolve => setTimeout(() => resolve(), 0));
+
+            return `http://example.com/${asset.assetId}.${asset.dataFormat}`;
+        },
+        null,
+        null
+    );
+
+    const testAssets = getTestAssets(storage);
+    const assetChecks = testAssets.map(async assetInfo => {
+        const asset = await storage.load(assetInfo.type, assetInfo.id, assetInfo.ext);
+
+        expect(asset).toBeInstanceOf(storage.Asset);
+        expect(asset.assetId).toBe(assetInfo.id);
+        expect(asset.assetType).toBe(assetInfo.type);
+        expect(asset.data.length).toBeGreaterThan(0);
+
+        // Web assets should come back as clean
+        expect(asset.clean).toBeTruthy();
+
+        if (assetInfo.md5) {
+            expect(md5(asset.data)).toBe(assetInfo.md5);
+        }
+    });
+
+    return Promise.all(assetChecks);
+});

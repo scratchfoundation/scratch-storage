@@ -7,23 +7,43 @@ import {ScratchGetRequest, ScratchSendRequest, Tool} from './Tool';
 import {AssetType} from './AssetType';
 import {DataFormat} from './DataFormat';
 
-const ensureRequestConfig = reqConfig => {
+/**
+ * The request configuration
+ */
+type RequestConfig = ScratchGetRequest | ScratchSendRequest;
+
+/**
+ * The result of a UrlFunction, which can be a string URL or a full request configuration
+ * object, or a promise for either of those.
+ *
+ * If set to null or undefined, the WebHelper will skip that store and move on to the
+ * next one. This allows stores to be registered that only provide a subset of their
+ * declared asset types at a given time.
+ */
+type RequestFnResult = null | undefined | string | ScratchGetRequest | ScratchSendRequest;
+
+/**
+ * Ensure that the provided request configuration is in object form, converting from
+ * string if necessary.
+ */
+const ensureRequestConfig = async (
+    reqConfig: RequestFnResult | Promise<RequestFnResult>
+): Promise<RequestConfig | null | undefined> => {
+    reqConfig = await reqConfig;
+
     if (typeof reqConfig === 'string') {
         return {
             url: reqConfig
         };
     }
+
     return reqConfig;
 };
 
 /**
- * @typedef {function} UrlFunction - A function which computes a URL from asset information.
- * @param {Asset} - The asset for which the URL should be computed.
- * @returns {(string|object)} - A string representing the URL for the asset request OR an object with configuration for
- *                              the underlying fetch call (necessary for configuring e.g. authentication)
+ * A function which computes a URL from asset information.
  */
-
-export type UrlFunction = (asset: Asset) => string | ScratchGetRequest | ScratchSendRequest;
+export type UrlFunction = (asset: Asset) => RequestFnResult | Promise<RequestFnResult>;
 
 interface StoreRecord {
     types: string[],
@@ -105,9 +125,9 @@ export default class WebHelper extends Helper {
      * @param {DataFormat} dataFormat - The file format / file extension of the asset to fetch: PNG, JPG, etc.
      * @returns {Promise.<Asset>} A promise for the contents of the asset.
      */
-    load (assetType: AssetType, assetId: AssetId, dataFormat: DataFormat): Promise<Asset | null> {
+    async load (assetType: AssetType, assetId: AssetId, dataFormat: DataFormat): Promise<Asset | null> {
 
-        /** @type {Array.<{url:string, result:*}>} List of URLs attempted & errors encountered. */
+        /** @type {unknown[]} List of errors encountered while attempting to load the asset. */
         const errors: unknown[] = [];
         const stores = this.stores.slice()
             .filter(store => store.types.indexOf(assetType.name) >= 0);
@@ -120,40 +140,33 @@ export default class WebHelper extends Helper {
             tool = this.projectTool;
         }
 
-        let storeIndex = 0;
-        const tryNextSource = (err?: unknown): Promise<Asset | null> => {
-            if (err) {
-                errors.push(err);
-            }
-            const store = stores[storeIndex++];
-
-            /** @type {UrlFunction} */
+        for (const store of stores) {
             const reqConfigFunction = store && store.get;
 
             if (reqConfigFunction) {
-                const reqConfig = ensureRequestConfig(reqConfigFunction(asset));
-                if (reqConfig === false) {
-                    return tryNextSource();
+                try {
+                    const reqConfig = await ensureRequestConfig(reqConfigFunction(asset));
+                    if (!reqConfig) {
+                        continue;
+                    }
+
+                    const body = await tool.get(reqConfig);
+                    if (body) {
+                        asset.setData(body, dataFormat);
+                        return asset;
+                    }
+                } catch (err) {
+                    errors.push(err);
                 }
-
-                return tool.get(reqConfig)
-                    .then(body => {
-                        if (body) {
-                            asset.setData(body, dataFormat);
-                            return asset;
-                        }
-                        return tryNextSource();
-                    })
-                    .catch(tryNextSource);
-            } else if (errors.length > 0) {
-                return Promise.reject(errors);
             }
+        }
 
-            // no stores matching asset
-            return Promise.resolve(null);
-        };
+        if (errors.length > 0) {
+            return Promise.reject(errors);
+        }
 
-        return tryNextSource();
+        // no stores matching asset
+        return Promise.resolve(null);
     }
 
     /**
@@ -164,7 +177,7 @@ export default class WebHelper extends Helper {
      * @param {?string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
      * @returns {Promise.<object>} A promise for the response from the create or update request
      */
-    store (
+    async store (
         assetType: AssetType,
         dataFormat: DataFormat | undefined,
         data: AssetData,
@@ -174,49 +187,60 @@ export default class WebHelper extends Helper {
         // If we have an asset id, we should update, otherwise create to get an id
         const create = assetId === '' || assetId === null || typeof assetId === 'undefined';
 
-        // Use the first store with the appropriate asset type and url function
-        const store = this.stores.filter(s =>
+        const candidateStores = this.stores.filter(s =>
             // Only use stores for the incoming asset type
             s.types.indexOf(assetType.name) !== -1 && (
                 // Only use stores that have a create function if this is a create request
                 // or an update function if this is an update request
                 (create && s.create) || s.update
             )
-        )[0];
+        );
 
         const method = create ? 'post' : 'put';
 
-        if (!store) return Promise.reject(new Error('No appropriate stores'));
+        if (candidateStores.length === 0) {
+            return Promise.reject(new Error('No appropriate stores'));
+        }
 
         let tool = this.assetTool;
         if (assetType.name === 'Project') {
             tool = this.projectTool;
         }
 
-        const reqConfig = ensureRequestConfig(
-            // The non-nullability of this gets checked above while looking up the store.
-            // Making TS understand that is going to require code refactoring which we currently don't
-            // feel safe to do.
-            create ? store.create!(asset) : store.update!(asset)
-        );
-        const reqBodyConfig = Object.assign({body: data, method}, reqConfig);
-        return tool.send(reqBodyConfig)
-            .then(body => {
-                // xhr makes it difficult to both send FormData and
-                // automatically parse a JSON response. So try to parse
-                // everything as JSON.
-                if (typeof body === 'string') {
-                    try {
-                        body = JSON.parse(body);
-                    } catch (parseError) { // eslint-disable-line @typescript-eslint/no-unused-vars
-                        // If it's not parseable, then we can't add the id even
-                        // if we want to, so stop here
-                        return body;
-                    }
+        for (const store of candidateStores) {
+            const reqConfig = await ensureRequestConfig(
+                // The non-nullability of this gets checked above while looking up the store.
+                // Making TS understand that is going to require code refactoring which we currently don't
+                // feel safe to do.
+                create ? store.create!(asset) : store.update!(asset)
+            );
+
+            if (!reqConfig) {
+                continue;
+            }
+
+            const reqBodyConfig = Object.assign({body: data, method}, reqConfig);
+
+            let body = await tool.send(reqBodyConfig);
+
+            // xhr makes it difficult to both send FormData and
+            // automatically parse a JSON response. So try to parse
+            // everything as JSON.
+            if (typeof body === 'string') {
+                try {
+                    body = JSON.parse(body);
+                } catch (parseError) { // eslint-disable-line @typescript-eslint/no-unused-vars
+                    // If it's not parseable, then we can't add the id even
+                    // if we want to, so stop here
+                    return body;
                 }
-                return Object.assign({
-                    id: body['content-name'] || assetId
-                }, body);
-            });
+            }
+
+            return Object.assign({
+                id: body['content-name'] || assetId
+            }, body);
+        }
+
+        return Promise.reject(new Error('No store could handle the request'));
     }
 }
