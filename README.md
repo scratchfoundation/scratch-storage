@@ -1,5 +1,7 @@
 ## scratch-storage
 
+#### Scratch Storage is a library for loading and storing project and asset files for Scratch 3.0
+
 ## **⚠️ NOTICE: Repository Migration to Mono-Repo ⚠️**
 
 The Scratch Team has migrated the `scratch-storage` module into a new mono-repo,
@@ -9,7 +11,15 @@ The Scratch Team has migrated the `scratch-storage` module into a new mono-repo,
 The new mono-repo version of `scratch-storage` is published to the NPM registry as
 [`@scratch/scratch-storage`](https://www.npmjs.com/package/@scratch/scratch-storage).
 
-#### Scratch Storage is a library for loading and storing project and asset files for Scratch 3.0
+**Contributors:**
+
+* I would like to thank all past contributors for their work on this repository.
+* If you are aware of valuable issues or pull requests, please consider re-opening them in the mono-repo. If you do
+  so, please link the new issue or pull request to the original one in this repository to help others find it and to
+  reduce the chance of duplicate work.
+* We apologize for the inconvenience and greatly appreciate your help with this transition!
+
+For more information, see the [`scratch-editor` repository on GitHub](https://github.com/scratchfoundation/scratch-editor).
 
 ## Installation
 This requires you to have Node.js installed.
